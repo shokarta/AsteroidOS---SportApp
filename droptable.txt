@@ -1,0 +1,9 @@
+function db_dropTable() {
+    // open database connection
+    db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
+
+    // create table for profile if doesnt exists yet
+    db.transaction(function(tx) { tx.executeSql('DROP TABLE `profile`'); });
+    db.transaction(function(tx) { tx.executeSql('DROP TABLE `workouts`'); });
+    db.transaction(function(tx) { tx.executeSql('DROP TABLE `workouts_summary`'); });
+}
