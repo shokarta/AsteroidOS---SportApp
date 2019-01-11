@@ -7,7 +7,12 @@ Item {
     id: mainItem
     anchors.fill: parent
 
+    property var record
+
     Component.onCompleted: {
         DatabaseJS.db_getProfile();
     }
+
+    record: DatabaseJS.db_getProfile()
+
 }
