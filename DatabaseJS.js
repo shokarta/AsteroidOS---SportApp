@@ -263,23 +263,24 @@ function workout_refresh(id_workout) {
     // inserts new record to current workout
     db.transaction(function(tx) {
         var timestamp = Math.floor(Date.now() / 1000);
-        var timespent = timestamp - lastWorkoutInput('timestamp');
-        var gps_latitude = Math.random() * (50.399519 - 50,392956) + 50.392956; // SHOKARTA - GPS Latitude
+        //var timespent = timestamp - lastWorkoutInput('timestamp');
+        var timespent = timestamp - lastWorkoutInput.timestamp;
+        var gps_latitude = Math.random() * (50.399519 - 50.392956) + 50.392956; // SHOKARTA - GPS Latitude
         var gps_longitude = Math.random() * (13.181750 - 13.171348) + 13.171348; // SHOKARTA - GPS Longitude
         var gps_altitude = Math.random() * (390 - 320) + 320; // SHOKARTA - GPS Altitude
-        var bpm = ''; // SHOKARTA
+        var bpm = 0; // SHOKARTA
 
         // Distance
-        var distance = Math.sqrt(((Math.acos( Math.sin(lastWorkoutInput('gps_latitude')*Math.pi/180)*math.sin(gps_latitude*Math.pi/180) + Math.cos(lastWorkoutInput('gps_latitude')*Math.pi/180)*Math.cos(gps_latitude*Math.pi/180)*Math.cos(gps_longitude*Math.pi/180-lastWorkoutInput('gps_longitude')*Math.pi/180) ) * 6370)^2)+(((Math.max(lastWorkoutInput('gps_altitude'), gps_altitude)-Math.min(lastWorkoutInput('gps_altitude'), gps_altitude))/1000)^2))
+        var distance = Math.sqrt(((Math.acos( Math.sin(lastWorkoutInput.gps_latitude*Math.pi/180)*Math.sin(gps_latitude*Math.pi/180) + Math.cos(lastWorkoutInput.gps_latitude*Math.pi/180)*Math.cos(gps_latitude*Math.pi/180)*Math.cos(gps_longitude*Math.pi/180-lastWorkoutInput.gps_longitude*Math.pi/180) ) * 6370)^2)+(((Math.max(lastWorkoutInput.gps_altitude, gps_altitude)-Math.min(lastWorkoutInput.gps_altitude, gps_altitude))/1000)^2))
 
-        var altitude_difference = gps_altitude - lastWorkoutInput('gps_altitude');
-        var speed = (distance)/((timetamp - lastWorkoutInput('timestamp'))/60/24);
+        var altitude_difference = gps_altitude - lastWorkoutInput.gps_altitude;
+        var speed = (distance)/((timestamp - lastWorkoutInput.timestamp)/60/24);
 
         // Calories
         var calories;
-        if(bpm != NULL) { calories = ((db_getProfile('age')*genderRecord(db_getProfile('gender').age_factor))-((db_getProfile('weight')*2,20462262)*genderRecord(db_getProfile('gender').weight_factor))+(bpm*genderRecord(db_getProfile('gender').heartrate_factor))-genderRecord(db_getProfile('gender').calories_factor))*(((timespent)/60)/4,184); }
+        if(bpm > 0) { calories = ((db_getProfile('age')*genderRecord(db_getProfile('gender').age_factor))-((db_getProfile('weight')*2,20462262)*genderRecord(db_getProfile('gender').weight_factor))+(bpm*genderRecord(db_getProfile('gender').heartrate_factor))-genderRecord(db_getProfile('gender').calories_factor))*(((timespent)/60)/4,184); }
         else { calories = sports[lastWorkoutSummary.sport].factor * db_getProfile('weight') * distance; }
-        if (calories < 0) { calores = 0; }
+        if (calories < 0) { calories = 0; }
 
         var hydration = calories / 771.61791764707;
 
