@@ -9,5 +9,7 @@
         <file>ScreenWelcome.qml</file>
         <file>DataForm.qml</file>
         <file>MainScreen.qml</file>
+        <file>pics/Female.png</file>
+        <file>pics/Male.png</file>
     </qresource>
 </RCC>

@@ -8,6 +8,7 @@ function db_createTable() {
                                                       + 'gender VARCHAR(10) NOT NULL,'
                                                       + 'age TINYINT NOT NULL,'
                                                       + 'weight DOUBLE NOT NULL)'); });
+	// SHOKARTA: id autoincrement only now, later to be have to be online while register profile so master database on internet will provide id number
 
     // create table for wotkouts if doesnt exists yet
     db.transaction(function(tx) { tx.executeSql('CREATE TABLE IF NOT EXISTS `workouts` ('
@@ -53,23 +54,18 @@ function db_getProfile() {
 
     db.transaction(function(tx) {
         var rs = tx.executeSql('SELECT id,gender,age,weight FROM `profile`');
+        var ix;
         var myId;
         var myGender;
         var myAge;
         var myWeight;
-        var ix;
+        var myVarriable = [];
         for (ix = 0; ix < rs.rows.length; ++ix) {
-            myId = rs.rows.item(ix).id;
-            myGender = rs.rows.item(ix).gender;
-            myAge = rs.rows.item(ix).age;
-            myWeight = rs.rows.item(ix).weight;
-            personalListView.model.append({
-                id: myId,
-                gender: myGender,
-                age: myAge,
-                weight: myWeight
-            });
-        }
+ //           myVarriable = {id: rs.rows.item(ix).id, gender: rs.rows.item(ix).gender, age: rs.rows.item(ix).age, weight: rs.rows.item(ix).weight};
+              myVarriable = [rs.rows.item(ix).id, rs.rows.item(ix).gender, rs.rows.item(ix).age, rs.rows.item(ix).weight];
+            }
+        console.log(myVarriable);
+        return myVarriable;
     });
 }
 
