@@ -73,7 +73,6 @@ function db_getProfile() {
             myVarriable = {id: rs.rows.item(ix).id, gender: rs.rows.item(ix).gender, age: rs.rows.item(ix).age, weight: rs.rows.item(ix).weight};
             //              myVarriable = [rs.rows.item(ix).id, rs.rows.item(ix).gender, rs.rows.item(ix).age, rs.rows.item(ix).weight];
         }
-        console.log(myVarriable);
     });
     return myVarriable;
 }
@@ -86,7 +85,6 @@ function db_saveProfile1() {
     var gender = genderTextField.currentText;
     db.transaction(function(tx) {
         var sql = 'INSERT INTO `profile` (gender,age,weight) VALUES (\'' + gender + '\', 0, 0)';
-        console.log(sql);
         tx.executeSql(sql);
         stackView.push(registerProfile2);
     });
@@ -99,7 +97,6 @@ function db_saveProfile2() {
     var age = ageTextField.text;
     db.transaction(function(tx) {
         var sql = 'UPDATE `profile` SET age=' + age + ' WHERE id=1';
-        console.log(sql);
         tx.executeSql(sql);
         stackView.push(registerProfile3);
     });
@@ -112,7 +109,6 @@ function db_saveProfile3() {
     var weight = weightTextField.text;
     db.transaction(function(tx) {
         var sql = 'UPDATE `profile` SET weight=' + weight + ' WHERE id=1';
-        console.log(sql);
         tx.executeSql(sql);
         stackView.push(registerProfileDone);
     });
@@ -130,7 +126,6 @@ function db_saveProfile() {
     var weight = weightTextField.text;
     db.transaction(function(tx) {
         var sql = 'INSERT INTO `profile` (gender,age,weight) VALUES (\'' + gender + '\',' + age + ',' + weight + ')';
-        console.log(sql);
         tx.executeSql(sql);
     });
 }
@@ -158,7 +153,6 @@ function workout_getInfo() {
                 calories: rs.rows.item(ix).calories,
                 hydration: rs.rows.item(ix).hydration   };
         }
-        console.log(lastIdCurrentWorkout);
     });
     return lastIdCurrentWorkout;
 }
@@ -171,7 +165,6 @@ function workout_newstart() {
 
     db.transaction(function(tx) {
         var sql1 = 'INSERT INTO `workouts_summary` (sport, distance, time, calories, hydration) VALUES (1, 0, 0, 0, 0)';
-        console.log(sql1);
         tx.executeSql(sql1);
 
         // ID of the new workout
@@ -185,7 +178,6 @@ function workout_newstart() {
         var gps_altitude = Math.random() * (390 - 320) + 320; // SHOKARTA - GPS Altitude
         var bpm = 0; // SHOKARTA
         var sql2 = 'INSERT INTO `workouts` (id_workout, timestamp, timespent, gps_latitude, gps_longitude, gps_altitude, bpm, distance, altitude_difference, speed, calories, hydratation) VALUES (' + workout_id + ', ' + timestamp + ', 0, ' + gps_latitude + ', ' + gps_longitude + ', ' + gps_altitude + ', ' + bpm + ', 0, 0, 0, 0, 0)';
-        console.log(sql2);
         tx.executeSql(sql2);
 
         stackView.push(ongoingWorkoutScreen);
@@ -211,7 +203,6 @@ function workout_refresh(id_workout) {
                 calories: rs.rows.item(ix).calories,
                 hydration: rs.rows.item(ix).hydration   };
         }
-        console.log(lastWorkoutSummary);
     });
 
     // gets first workout input
@@ -234,7 +225,6 @@ function workout_refresh(id_workout) {
                 gps_alcaloriestitude: rs.rows.item(ix).gps_alcaloriestitude,
                 hydratation: rs.rows.item(ix).hydratation   };
         }
-        console.log(firstWorkoutInput);
     });
 
     // gets last workout input
@@ -257,14 +247,13 @@ function workout_refresh(id_workout) {
                 gps_alcaloriestitude: rs.rows.item(ix).gps_alcaloriestitude,
                 hydratation: rs.rows.item(ix).hydratation   };
         }
-        console.log(lastWorkoutInput);
     });
 
     // inserts new record to current workout
     db.transaction(function(tx) {
         var timestamp = Math.floor(Date.now() / 1000);
-        //var timespent = timestamp - lastWorkoutInput('timestamp');
         var timespent = timestamp - lastWorkoutInput.timestamp;
+console.log(timespent + " = " + timestamp + " - " + lastWorkoutInput.timestamp);
         var gps_latitude = Math.random() * (50.399519 - 50.392956) + 50.392956; // SHOKARTA - GPS Latitude
         var gps_longitude = Math.random() * (13.181750 - 13.171348) + 13.171348; // SHOKARTA - GPS Longitude
         var gps_altitude = Math.random() * (390 - 320) + 320; // SHOKARTA - GPS Altitude
@@ -278,13 +267,21 @@ function workout_refresh(id_workout) {
 
         // Calories
         var calories;
-        if(bpm > 0) { calories = ((db_getProfile('age')*genderRecord(db_getProfile('gender').age_factor))-((db_getProfile('weight')*2,20462262)*genderRecord(db_getProfile('gender').weight_factor))+(bpm*genderRecord(db_getProfile('gender').heartrate_factor))-genderRecord(db_getProfile('gender').calories_factor))*(((timespent)/60)/4,184); }
-        else { calories = sports[lastWorkoutSummary.sport].factor * db_getProfile('weight') * distance; }
+        var profile = db_getProfile()
+        if(bpm > 0) {
+            calories =
+                (profile.age * genderRecount[profile.gender].age_factor) -
+                ((profile.weight * 2,20462262) * genderRecount[profile.gender].weight_factor) +
+                (bpm * genderRecount[profile.gender].heartrate_factor) -
+                (genderRecount[profile.gender].calories_factor) *
+                ((timespent / 60) / 4.184);
+        }
+        else { calories = sports[lastWorkoutSummary.sport].factor * profile.weight * distance; }
         if (calories < 0) { calories = 0; }
 
         var hydration = calories / 771.61791764707;
 
-        var sql = 'INSERT INTO `workouts` (id_workout, timestamp, timespent, gps_latitude, gps_longitude, gps_altitude, bpm, distance, altitude_difference, speed, calories, hydratation) VALUES (' + id_workout + ', ' + timestamp + ', ' + gps_latitude + ', ' + gps_longitude + ', ' + gps_altitude + ', ' + bpm + ', ' + distance + ', ' + altitude_difference + ', ' + speed + ', ' + calories + ', ' + hydration + ')';
+        var sql = 'INSERT INTO `workouts` (id_workout, timestamp, timespent, gps_latitude, gps_longitude, gps_altitude, bpm, distance, altitude_difference, speed, calories, hydratation) VALUES (' + id_workout + ', ' + timestamp + ', ' + timespent + ', ' + gps_latitude + ', ' + gps_longitude + ', ' + gps_altitude + ', ' + bpm + ', ' + distance + ', ' + altitude_difference + ', ' + speed + ', ' + calories + ', ' + hydration + ')';
         console.log(sql);
         tx.executeSql(sql);
 
