@@ -11,5 +11,6 @@
         <file>MainScreen.qml</file>
         <file>pics/Female.png</file>
         <file>pics/Male.png</file>
+        <file>OngoingWorkoutScreen.qml</file>
     </qresource>
 </RCC>

@@ -58,4 +58,8 @@ ApplicationWindow {
         id: mainScreen
         MainScreen {}
     }
+    Component {
+        id: ongoingWorkoutScreen
+        OngoingWorkoutScreen {}
+    }
 }
