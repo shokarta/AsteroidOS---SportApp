@@ -5,26 +5,82 @@ import 'DatabaseJS.js' as DatabaseJS
 
 Item {
     anchors.fill: parent
-    property var getProfile: DatabaseJS.workout_getInfo()
+    property var getCurrentWorkout: DatabaseJS.workout_getInfo()
+    property var getSportName: DatabaseJS.sports
 
     Row {
-        Text: 'Ongoing Workout:'
-        Text.bold: true
+        id: rowOngoingWorkout
+        anchors.top: parent.top
+        Text {
+            text: 'Ongoing Workout:'
+        }
     }
     Row {
-        Text: 'Workout: ' + workout_getInfo['sport']
+        id: rowWorkoutType
+        anchors.top: rowOngoingWorkout.bottom
+        Text {
+            id: textWorkoutType
+            text: 'Workout: ' + getSportName[getCurrentWorkout['sport']].name
+        }
     }
     Row {
-        Text: 'Time Elapsed: ' + workout_getInfo['time'] + 's'
+        id: rowTimeElapsed
+        anchors.top: rowWorkoutType.bottom
+        Text {
+            id: textTimeElapsed
+            text: 'Time Elapsed: ' + getCurrentWorkout['time'] + 's'
+        }
     }
     Row {
-        Text: 'Total Distance: ' + workout_getInfo['distance'] + 'km'
+        id: rowTotalDistance
+        anchors.top: rowTimeElapsed.bottom
+        Text {
+            id: textTotalDistance
+            text: 'Total Distance: ' + getCurrentWorkout['distance'].toFixed(2) + 'km'
+        }
     }
     Row {
-        Text: 'Calories Burned: ' + workout_getInfo['calories'] + 'kcal'
+        id: rowCaloriesBurned
+        anchors.top: rowTotalDistance.bottom
+        Text {
+            id: textCaloriesBurned
+            text: 'Calories Burned: ' + getCurrentWorkout['calories'].toFixed(2) + 'kcal'
+        }
     }
     Row {
-        Text: 'Fluid Loss: ' + workout_getInfo['hydration'] + 'l'
+        id: rowFluidLoss
+        anchors.top: rowCaloriesBurned.bottom
+        Text {
+            id: textFluidLoss
+            text: 'Fluid Loss: ' + getCurrentWorkout['hydration'].toFixed(2) + 'l'
+        }
+    }
+    Row {
+        id: rowProgress
+        anchors.top: rowFluidLoss.bottom
+        Text {
+            id: textProgress
+            text: 'Progress: IN PROGRESS'
+        }
+    }
+
+    Button {
+        id: pauseButton
+        text: 'PAUSE' // PAUSE
+        width: parent.width
+        height: 50
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: saveButton.top
+        }
+
+        onClicked: {
+            elapsedTimer.stop();
+            textProgress.text = 'Progress: PAUSED';
+            // swhich to PAUSE-PLAY
+        }
     }
 
     Button {
@@ -40,7 +96,8 @@ Item {
         }
 
         onClicked: {
-            DatabaseJS.workout_stop(workout_getInfo['id_workout']);
+            DatabaseJS.workout_stop(getCurrentWorkout['id']); // not programmed yet
+            textProgress.text = 'Progress: STOPPED';
         }
     }
 
@@ -49,6 +106,6 @@ Item {
         interval: 3000
         running: true
         repeat: true
-        onTriggered: DatabaseJS.workout_refresh(workout_getInfo['id_workout']);
+        onTriggered: DatabaseJS.workout_refresh(getCurrentWorkout['id']);
     }
 }
