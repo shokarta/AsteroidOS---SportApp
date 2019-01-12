@@ -3,51 +3,53 @@ import QtQuick.Controls 2.0
 import QtQuick.LocalStorage 2.0
 import 'DatabaseJS.js' as DatabaseJS
 
-Item {
+Rectangle {
     id: parentObject
+    anchors.fill: parent
 
-    Column {
+    Rectangle {
+        id: noteLabel
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 50
 
-        anchors.fill: parent
-
-        spacing: 2
-
-        Row {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            spacing: 2
-            Label {
-                id: weightLabel
-                text: 'Please set your current weight in kg:'
-            }
-        }
-
-        Row {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            spacing: 2
-
-            TextField {
-                id: weightTextField
-                width: 100
-            }
+        Label {
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pointSize: 15
+            text: 'Please set your current weight in kg:'
         }
     }
 
-        Button {
-            id: saveButton
-            text: 'PROCEED' // SAVE
-            width: parent.width
-            height: 50
+    Rectangle {
+        anchors.top: noteLabel.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        height: 50
 
-            anchors {
-                left: parent.left
-                right: parent.right
-                bottom: parent.bottom
-            }
-
-            onClicked: {
-                DatabaseJS.db_saveProfile3();
-            }
+        TextField {
+            id: weightTextField
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 100
         }
+    }
+
+    Button {
+        id: saveButton
+        text: 'PROCEED' // SAVE
+        width: parent.width
+        height: 50
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+
+        onClicked: {
+            DatabaseJS.db_saveProfile3();
+        }
+    }
 }

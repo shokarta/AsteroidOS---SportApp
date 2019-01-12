@@ -27,16 +27,13 @@ ApplicationWindow {
     StackView {
         id: stackView
         anchors.fill: parent
+
         initialItem: welcomeScreen
     }
 
     Component {
         id: welcomeScreen
         ScreenWelcome {}
-    }
-    Component {
-        id: dataForm
-        DataForm {}
     }
     Component {
         id: registerProfile1
@@ -49,10 +46,6 @@ ApplicationWindow {
     Component {
         id: registerProfile3
         RegisterProfile3 {}
-    }
-    Component {
-        id: registerProfileDone
-        RegisterProfileDone {}
     }
     Component {
         id: mainScreen

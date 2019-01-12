@@ -53,11 +53,16 @@ function db_checkProfile() {
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
 
     db.transaction(function(tx) {
-        var rs = tx.executeSql('SELECT id,gender,age,weight FROM `profile`');
-        var myAmount = rs.rows.length;
+        var rs = tx.executeSql('SELECT count(*) AS checkCount FROM sqlite_master WHERE type=\'table\' AND name=\'profile\'');
+        var myAmount = rs.rows.item(0).checkCount;
 
         if (myAmount < 1) { stackView.push(registerProfile1); }
-        else {              stackView.push(mainScreen); }
+
+        var rs2 = tx.executeSql('SELECT count(id) AS checkCount2 FROM profile');
+        var myAmount2 = rs2.rows.item(0).checkCount2;
+
+        if (myAmount2 < 1) { stackView.push(registerProfile1); }
+        else {               stackView.push(mainScreen); }
     });
 }
 
@@ -110,7 +115,7 @@ function db_saveProfile3() {
     db.transaction(function(tx) {
         var sql = 'UPDATE `profile` SET weight=' + weight + ' WHERE id=1';
         tx.executeSql(sql);
-        stackView.push(registerProfileDone);
+        stackView.push(mainScreen);
     });
 }
 
@@ -155,6 +160,31 @@ function workout_getInfo() {
         }
     });
     return lastIdCurrentWorkout;
+}
+
+function getSummaryWorkouts() {
+    // open database connection
+    db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
+
+    var summaryWorkouts = [];
+    db.transaction(function(tx) {
+        var rs = tx.executeSql('SELECT count(id) AS var1,sum(distance) AS var2,sum(time) AS var3,sum(calories) AS var4,sum(hydration) AS var5 FROM `workouts_summary`');
+            if (rs.rows.item(0).var1 > 0) {
+                    summaryWorkouts = {  amountWorkouts: rs.rows.item(0).var1,
+                                         amountDistance: rs.rows.item(0).var2,
+                                         amountTimespent: rs.rows.item(0).var3,
+                                         amountCalories: rs.rows.item(0).var4,
+                                         amountHydration: rs.rows.item(0).var5   };
+            }
+            else {
+                summaryWorkouts = {  amountWorkouts: 0,
+                                     amountDistance: 0,
+                                     amountTimespent: 0,
+                                     amountCalories: 0,
+                                     amountHydration: 0   };
+            }
+    });
+    return summaryWorkouts;
 }
 
 function workout_getInfoFromWorkout(id_workout) {
