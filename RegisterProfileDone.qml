@@ -36,7 +36,7 @@ Item {
         }
 
         onClicked: {
-            DatabaseJS.push_start();
+            DatabaseJS.push_start(mainScreen);
         }
     }
 }

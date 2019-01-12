@@ -132,29 +132,45 @@ function db_saveProfile() {
 
 
 // PUSH
-function push_start() {
-    stackView.push(mainScreen);
-}
 
+function push_start(site) {
+    stackView.push(site);
+}
 
 function workout_getInfo() {
     // open database connection
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
-    var lastIdCurrentWorkout = [];
 
+    var lastIdCurrentWorkout = [];
     db.transaction(function(tx) {
         var rs = tx.executeSql('SELECT id,sport,distance,time,calories,hydration FROM `workouts_summary` ORDER BY id DESC LIMIT 1');
         var ix;
         for (ix = 0; ix < rs.rows.length; ++ix) {
             lastIdCurrentWorkout = {    id: rs.rows.item(ix).id,
-                sport: rs.rows.item(ix).sport,
-                distance: rs.rows.item(ix).distance,
-                time: rs.rows.item(ix).time,
-                calories: rs.rows.item(ix).calories,
-                hydration: rs.rows.item(ix).hydration   };
+                                        sport: rs.rows.item(ix).sport,
+                                        distance: rs.rows.item(ix).distance,
+                                        time: rs.rows.item(ix).time,
+                                        calories: rs.rows.item(ix).calories,
+                                        hydration: rs.rows.item(ix).hydration   };
         }
     });
     return lastIdCurrentWorkout;
+}
+
+function workout_getInfoFromWorkout(id_workout) {
+    // open database connection
+    db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
+
+    var lastInfoCurrentWorkout = [];
+    db.transaction(function(tx) {
+        var rs = tx.executeSql('SELECT speed,bpm FROM `workouts` WHERE id_workout='+ id_workout +' ORDER BY id DESC LIMIT 1');
+        var ix;
+        for (ix = 0; ix < rs.rows.length; ++ix) {
+            lastInfoCurrentWorkout = {  bpm: rs.rows.item(ix).bpm,
+                                        speed: rs.rows.item(ix).speed   };
+        }
+    });
+    return lastInfoCurrentWorkout;
 }
 
 // New Workout Start
@@ -270,7 +286,7 @@ function workout_refresh(id_workout) {
                         Math.cos((gps_longitude * Math.PI / 180) - (lastWorkoutInput.gps_longitude * Math.PI / 180))
                     ) * 6370, 2)) +
                     (Math.pow((( Math.max( lastWorkoutInput.gps_altitude, gps_altitude) - Math.min( lastWorkoutInput.gps_altitude, gps_altitude)) / 1000), 2)
-                )) * 1000;
+                ));
 
         var altitude_difference = gps_altitude - lastWorkoutInput.gps_altitude;
         var speed = (distance)/((timespent)/60/24);
@@ -317,7 +333,5 @@ function workout_refresh(id_workout) {
             var sql = 'UPDATE `workouts_summary` SET distance=' + newDistance + ', time=' + newTime + ', calories=' + newCalories + ', hydration=' + newHydration + ' WHERE id=' + id_workout;
             tx.executeSql(sql);
         });
-
-        //stackView.push(ongoingWorkoutScreen);
     });
 }

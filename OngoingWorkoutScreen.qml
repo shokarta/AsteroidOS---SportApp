@@ -6,7 +6,9 @@ import 'DatabaseJS.js' as DatabaseJS
 Item {
     anchors.fill: parent
     property var getCurrentWorkout: DatabaseJS.workout_getInfo()
+    property var getCurrentWorkoutInput: DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id'])
     property var getSportName: DatabaseJS.sports
+    property bool timerPaused: false
 
     Row {
         id: rowOngoingWorkout
@@ -32,8 +34,24 @@ Item {
         }
     }
     Row {
-        id: rowTotalDistance
+        id: rowRPM
         anchors.top: rowTimeElapsed.bottom
+        Text {
+            id: textRPM
+            text: 'RPM: ' + getCurrentWorkoutInput['bpm'].toFixed(2) + 'bpm' //SHOKARTA
+        }
+    }
+    Row {
+        id: rowSpeed
+        anchors.top: rowRPM.bottom
+        Text {
+            id: textSpeed
+            text: 'Current Speed: ' + getCurrentWorkoutInput['speed'].toFixed(2) + 'km/h' //SHOKARTA
+        }
+    }
+    Row {
+        id: rowTotalDistance
+        anchors.top: rowSpeed.bottom
         Text {
             id: textTotalDistance
             text: 'Total Distance: ' + getCurrentWorkout['distance'].toFixed(2) + 'km'
@@ -64,6 +82,7 @@ Item {
         }
     }
 
+
     Button {
         id: pauseButton
         text: 'PAUSE' // PAUSE
@@ -73,18 +92,27 @@ Item {
         anchors {
             left: parent.left
             right: parent.right
-            bottom: saveButton.top
+            bottom: stopButton.top
         }
 
         onClicked: {
-            elapsedTimer.stop();
-            textProgress.text = 'Progress: PAUSED';
-            // swhich to PAUSE-PLAY
+            if(timerPaused == true) {
+                pauseButton.text = 'PAUSE';
+                textProgress.text = 'Progress: IN PROGRESS';
+                elapsedTimer.start();
+                timerPaused = false;
+            }
+            else {
+                pauseButton.text = 'CONTINUE';
+                textProgress.text = 'Progress: PAUSED';
+                elapsedTimer.stop();
+                timerPaused = true;
+            }
         }
     }
 
     Button {
-        id: saveButton
+        id: stopButton
         text: 'STOP' // STOP
         width: parent.width
         height: 50
@@ -96,8 +124,10 @@ Item {
         }
 
         onClicked: {
-            DatabaseJS.workout_stop(getCurrentWorkout['id']); // not programmed yet
+            stopButton.text = 'PLEASE WAIT...';
             textProgress.text = 'Progress: STOPPED';
+            elapsedTimer.stop();
+            DatabaseJS.push_start(mainScreen);
         }
     }
 
