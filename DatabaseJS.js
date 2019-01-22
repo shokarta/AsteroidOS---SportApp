@@ -3,12 +3,12 @@ var sports = [];
 sports[1] = { name: "Running",  factor: 1 };
 sports[2] = { name: "Walking",  factor: 2 };
 sports[3] = { name: "Swimming", factor: 3 };
+sports[4] = { name: "Swimming", factor: 3 };
 
-// Recounting by GENDER
+// RECOUNTING by GENDER
 var genderRecount = [];
 genderRecount['Male'] = {   calories_factor: 55.0969, age_factor: 0.2017, weight_factor: 0.09036, heartrate_factor: 0.6309 };
 genderRecount['Female'] = { calories_factor: 20.4022, age_factor: 0.0074, weight_factor: 0.05741, heartrate_factor: 0.4472 };
-
 
 
 function db_createTable() {
@@ -231,7 +231,7 @@ function workout_newstart() {
 }
 
 // Workout Refresh
-function workout_refresh(id_workout) {
+function workout_refresh(id_workout, timerCheck) {
 
     // open database connection
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
@@ -299,7 +299,7 @@ function workout_refresh(id_workout) {
     var newWorkoutInput = [];
     db.transaction(function(tx) {
         var timestamp = Math.floor(Date.now() / 1000);
-        var timespent = timestamp - lastWorkoutInput.timestamp;
+        var timespent = timerCheck;
         var gps_latitude = Math.random() * (50.399519 - 50.392956) + 50.392956; // SHOKARTA - GPS Latitude
         var gps_longitude = Math.random() * (13.181750 - 13.171348) + 13.171348; // SHOKARTA - GPS Longitude
         var gps_altitude = Math.random() * (390 - 320) + 320; // SHOKARTA - GPS Altitude

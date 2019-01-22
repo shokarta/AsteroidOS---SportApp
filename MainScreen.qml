@@ -1,14 +1,12 @@
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Controls 2.0
 import QtQuick.LocalStorage 2.0
+import QtPositioning 5.2
 import 'DatabaseJS.js' as DatabaseJS
 
 Rectangle {
     id: superMainScreen
     anchors.fill: parent
-
-    property var getProfile: DatabaseJS.db_getProfile()
-    property var getSummaryWorkouts: DatabaseJS.getSummaryWorkouts()
 
     Rectangle {
         id: mainItem
@@ -122,7 +120,7 @@ Rectangle {
                     width: rowWorkoutsAmount.width / 2
                     Text {
                         font.pointSize: 12
-                        text: getSummaryWorkouts['amountTimespent'] + ' s'
+                        text: formatSecs(getSummaryWorkouts['amountTimespent'])
                     }
                 }
             }

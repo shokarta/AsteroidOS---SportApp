@@ -1,272 +1,190 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.0
+import QtQuick 2.9
+import QtQuick.Controls 2.3
 import QtQuick.LocalStorage 2.0
+import QtPositioning 5.2
 import 'DatabaseJS.js' as DatabaseJS
 
-
 Rectangle {
-    anchors.fill: parent
 
-    property var getCurrentWorkout: DatabaseJS.workout_getInfo()
-    property var getCurrentWorkoutInput: DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id'])
+    id: mainOngoingWorkout
+    anchors.fill: parent
+    color: "black"
+
     property var getSportName: DatabaseJS.sports
     property bool timerPaused: false
+    property int countTimer: 0
+    property int masterTimerCount: 0
 
+    Component.onCompleted: {
+        DatabaseJS.workout_getInfo().lastIdCurrentWorkout = { id: 0, sport: 0, distance: 0, time: 0, calories: 0, hydration: 0 };
+        DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id']).lastInfoCurrentWorkout = { bpm: 0, speed: 0 };
+    }
+
+    // CALORIES
     Rectangle {
-        id: testRect
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: 50
+        id: mainOngoingWorkoutCalories
+        anchors.top: mainOngoingWorkout.top
+        anchors.left: mainOngoingWorkout.left
+        anchors.right: mainOngoingWorkout.right
+        anchors.leftMargin: 30
+        height: mainOngoingWorkout.height / 4
+        color: "transparent"
 
         Label {
-            id: rowWorkoutLabel
-            anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pointSize: 15
-            text: '<b>Ongoing Workout:</b>'
+            id: mainOngoingWorkoutCaloriesLabel
+            anchors.horizontalCenter: mainOngoingWorkoutCalories.horizontalCenter
+            anchors.bottom: mainOngoingWorkoutCalories.bottom
+            font.pointSize: 50
+            text: Math.floor(getCurrentWorkout['calories']) + ' kcal'
+            color: "white"
         }
     }
 
+    // BPM
     Rectangle {
-        id: mainWorkoutScreen
-        anchors.top: testRect.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        id: mainOngoingWorkoutBPM
+        anchors.top: mainOngoingWorkoutCalories.bottom
+        anchors.left: mainOngoingWorkout.left
+        width: mainOngoingWorkout.width / 5 * 3
+        height: mainOngoingWorkout.height / 2.67
+        color: "transparent"
 
-        Row {
-            id: rowWorkoutType
-            anchors.top: mainWorkoutScreen.top
-            width: mainWorkoutScreen.width
-            spacing: 5
-
-            Column {
-                width: rowWorkoutType.width / 2
-                Text {
-                    anchors.right: parent.right
-                    font.pointSize: 12
-                    text: '<b>Workout:</b>'
-                }
-            }
-            Column {
-                width: rowWorkoutType.width / 2
-                Text {
-                    font.pointSize: 12
-                    text: getSportName[getCurrentWorkout['sport']].name
-                }
-            }
+        Label {
+            id: mainOngoingWorkoutBPMLabel
+            anchors.right: mainOngoingWorkoutBPM.right
+            anchors.verticalCenter: mainOngoingWorkoutBPM.verticalCenter
+            font.pointSize: 90
+            text: getCurrentWorkoutInput['bpm']
+            color: "green"
         }
-        Row {
-            id: rowTimeElapsed
-            anchors.top: rowWorkoutType.bottom
-            width: mainWorkoutScreen.width
-            spacing: 5
+    }
+    Rectangle {
+        id: mainOngoingWorkoutBPMIcon
+        anchors.top: mainOngoingWorkoutCalories.bottom
+        anchors.right: mainOngoingWorkout.right
+        width: mainOngoingWorkout.width / 5 * 2
+        height: mainOngoingWorkout.height / 2.67
+        color: "transparent"
 
-            Column {
-                width: rowTimeElapsed.width / 2
-                Text {
-                    anchors.right: parent.right
-                    font.pointSize: 12
-                    text: '<b>Time Elapsed:</b>'
-                }
-            }
-            Column {
-                width: rowTimeElapsed.width / 2
-                Text {
-                    font.pointSize: 12
-                    text: getCurrentWorkout['time'] + ' s'
-                }
-            }
+        AnimatedImage {
+            anchors.verticalCenter: mainOngoingWorkoutBPMIcon.verticalCenter
+            anchors.horizontalCenter: mainOngoingWorkoutBPMIcon.horizontalCenter
+            height: mainOngoingWorkoutBPMIcon.height / 5 * 3
+            fillMode: Image.PreserveAspectFit
+            source: 'pics/heartrate.gif'
         }
-        Row {
-            id: rowBPM
-            anchors.top: rowTimeElapsed.bottom
-            width: mainWorkoutScreen.width
-            spacing: 5
+    }
 
-            Column {
-                width: rowBPM.width / 2
-                Text {
-                    anchors.right: parent.right
-                    font.pointSize: 12
-                    text: '<b>BPM:</b>'
-                }
-            }
-            Column {
-                width: rowBPM.width / 2
-                Text {
-                    font.pointSize: 12
-                    text: getCurrentWorkoutInput['bpm'].toFixed(2) + ' bpm' //SHOKARTA
-                }
-            }
+    // TIME ELAPSED
+    Rectangle {
+        id: mainOngoingWorkoutTime
+        anchors.top: mainOngoingWorkoutBPM.bottom
+        anchors.left: mainOngoingWorkout.left
+        width: mainOngoingWorkout.width / 5 * 3
+        height: mainOngoingWorkout.height / 4
+        color: "transparent"
+
+        Label {
+            id: mainOngoingWorkoutTimeLabel
+            anchors.verticalCenter: mainOngoingWorkoutTime.verticalCenter
+            anchors.horizontalCenter: mainOngoingWorkoutTime.horizontalCenter
+            font.pointSize: 40
+            text: formatSecs(masterTimerCount)
+            color: "white"
         }
-        Row {
-            id: rowSpeed
-            anchors.top: rowBPM.bottom
-            width: mainWorkoutScreen.width
-            spacing: 5
+    }
+    // DISTANCE
+    Rectangle {
+        id: mainOngoingWorkoutDistance
+        anchors.top: mainOngoingWorkoutBPM.bottom
+        anchors.right: mainOngoingWorkout.right
+        width: mainOngoingWorkout.width / 5 * 2
+        height: mainOngoingWorkout.height / 4
+        color: "transparent"
 
-            Column {
-                width: rowSpeed.width / 2
-                Text {
-                    anchors.right: parent.right
-                    font.pointSize: 12
-                    text: '<b>Current Speed:</b>'
-                }
-            }
-            Column {
-                width: rowSpeed.width / 2
-                Text {
-                    font.pointSize: 12
-                    text: getCurrentWorkoutInput['speed'].toFixed(2) + ' km/h'
-                }
-            }
+        Label {
+            id: mainOngoingWorkoutDistanceLabel
+            anchors.right: mainOngoingWorkoutDistance.right
+            anchors.bottom: mainOngoingWorkoutDistance.bottom
+            font.pointSize: 30
+            text: getCurrentWorkout['distance'].toFixed(2) + 'km'
+            color: "darkgreen"
         }
-        Row {
-            id: rowTotalDistance
-            anchors.top: rowSpeed.bottom
-            width: mainWorkoutScreen.width
-            spacing: 5
+    }
 
-            Column {
-                width: rowTotalDistance.width / 2
-                Text {
-                    anchors.right: parent.right
-                    font.pointSize: 12
-                    text: '<b>Total Distance:</b>'
-                }
-            }
-            Column {
-                width: rowTotalDistance.width / 2
-                Text {
-                    font.pointSize: 12
-                    text: getCurrentWorkout['distance'].toFixed(2) + ' km'
-                }
-            }
+    // STOP BUTTON
+    DelayButton  {
+        id: stopButton
+        text: elapsedTimer.running ? "PAUSE" : "CONTINUE"
+        delay: 2000
+        width: mainOngoingWorkout.width
+        height: 50
+
+        anchors {
+            left: mainOngoingWorkout.left
+            right: mainOngoingWorkout.right
+            bottom: mainOngoingWorkout.bottom
         }
-        Row {
-            id: rowCaloriesBurned
-            anchors.top: rowTotalDistance.bottom
-            width: mainWorkoutScreen.width
-            spacing: 5
 
-            Column {
-                width: rowCaloriesBurned.width / 2
-                Text {
-                    anchors.right: parent.right
-                    font.pointSize: 12
-                    text: '<b>Calories Burned:</b>'
-                }
-            }
-            Column {
-                width: rowCaloriesBurned.width / 2
-                Text {
-                    font.pointSize: 12
-                    text: getCurrentWorkout['calories'].toFixed(2) + ' kcal'
-                }
-            }
-        }
-        Row {
-            id: rowFluidLoss
-            anchors.top: rowCaloriesBurned.bottom
-            width: mainWorkoutScreen.width
-            spacing: 5
-
-            Column {
-                width: rowFluidLoss.width / 2
-                Text {
-                    anchors.right: parent.right
-                    font.pointSize: 12
-                    text: '<b>Fluid Loss:</b>'
-                }
-            }
-            Column {
-                width: rowFluidLoss.width / 2
-                Text {
-                    font.pointSize: 12
-                    text: getCurrentWorkout['hydration'].toFixed(2) + ' l'
-                }
-            }
-        }
-        Row {
-            id: rowProgress
-            anchors.top: rowFluidLoss.bottom
-            width: mainWorkoutScreen.width
-            spacing: 5
-
-            Column {
-                width: rowProgress.width / 2
-                Text {
-                    anchors.right: parent.right
-                    font.pointSize: 12
-                    text: '<b>Progress:</b>'
-                }
-            }
-            Column {
-                width: rowProgress.width / 2
-                Text {
-                    id: textProgress
-                    font.pointSize: 12
-                    text: 'IN PROGRESS'
-                }
+        background:
+            Rectangle {
+            id: mainBackground
+            anchors.centerIn: parent
+            border.width: 3
+            border.color: "darkgreen"
+            radius: 15
+            width: parent.height
+            height: parent.width
+            rotation: 270
+            gradient: Gradient {
+                GradientStop { position: stopButton.progress-0.1; color: "green" }
+                GradientStop { position: stopButton.progress; color: "lightgreen" }
             }
         }
 
-        Button {
-            id: pauseButton
-            text: 'PAUSE' // PAUSE
-            width: parent.width
-            height: 50
+        signal myPressAndHold()
 
-            anchors {
-                left: parent.left
-                right: parent.right
-                bottom: stopButton.top
-            }
-
-            onClicked: {
-                if(timerPaused == true) {
-                    pauseButton.text = 'PAUSE';
-                    textProgress.text = 'IN PROGRESS';
-                    elapsedTimer.start();
-                    timerPaused = false;
-                }
-                else {
-                    pauseButton.text = 'CONTINUE';
-                    textProgress.text = 'PAUSED';
-                    elapsedTimer.stop();
-                    timerPaused = true;
-                }
-            }
+        onPressed: {
+            elapsedTimer.running ? masterTimer.stop() : masterTimer.start();
+            elapsedTimer.running ? elapsedTimer.stop() : elapsedTimer.start();
+            pressAndHoldTimer.start();
+        }
+        onReleased: {
+            pressAndHoldTimer.stop();
+        }
+        onMyPressAndHold: {
+            elapsedTimer.stop();
+            masterTimer.stop();
+            DatabaseJS.push_start(mainScreen);
         }
 
-        Button {
-            id: stopButton
-            text: 'STOP' // STOP
-            width: parent.width
-            height: 50
-
-            anchors {
-                left: parent.left
-                right: parent.right
-                bottom: parent.bottom
-            }
-
-            onClicked: {
-                stopButton.text = 'PLEASE WAIT...';
-                textProgress.text = 'STOPPED';
-                elapsedTimer.stop();
-                DatabaseJS.push_start(mainScreen);
+        Timer {
+            id: pressAndHoldTimer
+            interval: 2000
+            running: false
+            repeat: false
+            onTriggered: {
+                parent.myPressAndHold();
             }
         }
+    }
 
-        Timer  {
-            id: elapsedTimer
-            interval: 3000
-            running: true
-            repeat: true
-            onTriggered: DatabaseJS.workout_refresh(getCurrentWorkout['id']);
+    Timer  {
+        id: elapsedTimer
+        interval: 3000
+        running: true
+        repeat: true
+        onTriggered: {
+            countTimer = countTimer + (elapsedTimer.interval/1000);
+            DatabaseJS.workout_refresh(getCurrentWorkout['id'], countTimer);
+            countTimer = 0;
         }
+    }
+    Timer  {
+        id: masterTimer
+        interval: 1000
+        running: true
+        repeat: true
+        onTriggered: masterTimerCount += 1
     }
 }
