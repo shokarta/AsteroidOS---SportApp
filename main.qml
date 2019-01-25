@@ -10,7 +10,8 @@ ApplicationWindow {
     height: 400
     title: qsTr("Sports App")
 
-    property var getProfile
+    // Watch setting
+    property bool smSquared: false
 
     // DB Settings
     property string dbId: "MyDatabase"
@@ -19,10 +20,11 @@ ApplicationWindow {
     property int dbSize: 1000000
     property var db
 
-    getProfile: DatabaseJS.db_getProfile()
+    property var getProfile: DatabaseJS.db_getProfile()
     property var getSummaryWorkouts: DatabaseJS.getSummaryWorkouts()
     property var getCurrentWorkout: DatabaseJS.workout_getInfo()
     property var getCurrentWorkoutInput: DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id'])
+
 
     // constructor
     Component.onCompleted: {

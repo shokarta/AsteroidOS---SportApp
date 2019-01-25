@@ -12,5 +12,7 @@
         <file>OngoingWorkoutScreen.qml</file>
         <file>pics/bpm.png</file>
         <file>pics/heartrate.gif</file>
+        <file>pics/circled.png</file>
+        <file>pics/squared.png</file>
     </qresource>
 </RCC>

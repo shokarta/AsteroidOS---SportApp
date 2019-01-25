@@ -4,9 +4,8 @@ import QtQuick.LocalStorage 2.0
 import QtPositioning 5.2
 import 'DatabaseJS.js' as DatabaseJS
 
-Rectangle {
+Item {
     id: parentObject
-    anchors.fill: parent
 
     Rectangle {
         id: noteLabel
