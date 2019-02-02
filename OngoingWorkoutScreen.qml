@@ -41,9 +41,8 @@ Item {
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pointSize: mainWindow.height / 7.27
-                text: getCurrentWorkoutInput['bpm'] < 1 ? "N/A" : getCurrentWorkoutInput['bpm'];
-                //color: DatabaseJS.getHZcolor(getCurrentWorkoutInput['bpm'])
-                color: DatabaseJS.getHZcolor(mainOngoingWorkoutBPMLabel.text)
+                text: getCurrentWorkoutInputTest.get(0).bpm
+                color: DatabaseJS.getHZcolor(getCurrentWorkoutInputTest.get(0).bpm)
             }
         }
 
@@ -71,7 +70,7 @@ Item {
                     anchors.topMargin: mainOngoingWorkoutSpeed.height/2 - (mainOngoingWorkoutSpeedLabel.height+mainOngoingWorkoutSpeedUnit.height)/2
                     anchors.horizontalCenter: parent.horizontalCenter
                     font.pointSize: mainOngoingWorkout.height / 8.89
-                    text: Math.floor(getCurrentWorkoutInput['speed']) + ':' + formatSecs2(Math.floor((getCurrentWorkoutInput['speed'] - Math.floor(getCurrentWorkoutInput['speed'])).toFixed(2)*60))
+                    text: Math.floor(getCurrentWorkoutInputTest.get(0).speed) + ':' + formatSecs2(Math.floor((getCurrentWorkoutInputTest.get(0).speed - Math.floor(getCurrentWorkoutInputTest.get(0).speed)).toFixed(2)*60))
                     color: "white"
                 }
                 Label {

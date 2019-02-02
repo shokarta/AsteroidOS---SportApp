@@ -220,16 +220,13 @@ function workout_getInfoFromWorkout(id_workout) {
     // open database connection
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
 
-    var lastInfoCurrentWorkout = [];
     db.transaction(function(tx) {
         var rs = tx.executeSql('SELECT speed,bpm FROM `workouts` WHERE id_workout='+ id_workout +' ORDER BY id DESC LIMIT 1');
-        var ix;
-        for (ix = 0; ix < rs.rows.length; ++ix) {
-            lastInfoCurrentWorkout = {  bpm: rs.rows.item(ix).bpm,
-                                        speed: rs.rows.item(ix).speed   };
+        for (var ix = 0; ix < rs.rows.length; ++ix) {
+            getCurrentWorkoutInputTest.clear();
+            getCurrentWorkoutInputTest.append({"bpm": rs.rows.item(ix).bpm, "speed": rs.rows.item(ix).speed});
         }
     });
-    return lastInfoCurrentWorkout;
 }
 
 // New Workout Start

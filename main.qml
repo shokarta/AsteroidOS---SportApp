@@ -23,9 +23,10 @@ ApplicationWindow {
 
     property var getProfile
     property var getSummaryWorkouts
-    property var getCurrentWorkout
-    property var getCurrentWorkoutInput
+    property var getCurrentWorkout: DatabaseJS.workout_getInfo()
+    property var getCurrentWorkoutInput: DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id'])
 
+    ListModel { id: getCurrentWorkoutInputTest }
 
     // constructor
     Component.onCompleted: {
@@ -33,8 +34,6 @@ ApplicationWindow {
         DatabaseJS.db_createTable();
         getProfile = DatabaseJS.db_getProfile();
         getSummaryWorkouts = DatabaseJS.getSummaryWorkouts();
-        getCurrentWorkout = DatabaseJS.workout_getInfo()
-        getCurrentWorkoutInput = DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id'])
     }
 
     function formatSecs(secs) {
