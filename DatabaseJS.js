@@ -10,6 +10,34 @@ var genderRecount = [];
 genderRecount['Male'] = {   calories_factor: 55.0969, age_factor: 0.2017, weight_factor: 0.09036, heartrate_factor: 0.6309 };
 genderRecount['Female'] = { calories_factor: 20.4022, age_factor: 0.0074, weight_factor: 0.05741, heartrate_factor: 0.4472 };
 
+// HEART RATE ZONES DETERMINE
+function getHZcolor(bpm_input) {
+    var maxHR;
+    if (db_getProfile().gender === "Male") {  maxHR = 214 - db_getProfile().age * 0.8; }
+    else { maxHR = maxHR = 209 - db_getProfile().age * 0.8; }
+
+    var HZcolor;
+    // N/A
+    if (bpm_input < 1) { HZcolor = "white"; }
+
+    // SPEED
+    else if (bpm_input >= maxHR*0.9) { HZcolor = "#ff0000"; }
+
+    // ECONOMY
+    else if ((bpm_input < maxHR*0.9) && (bpm_input >= maxHR*0.8)) { HZcolor = "#ffc000"; }
+
+    // STAMINA
+    else if ((bpm_input < maxHR*0.8) && (bpm_input >= maxHR*0.7)) { HZcolor = "#38b938"; }
+
+    // ENDURANCE
+    else if ((bpm_input < maxHR*0.7) && (bpm_input >= maxHR*0.6)) { HZcolor = "#00b0f0"; }
+
+    // RECOVERY
+    else if (bpm_input < maxHR*0.6) { HZcolor = "#a6a6a6"; }
+
+    return HZcolor;
+}
+
 
 function db_createTable() {
     // open database connection
@@ -148,7 +176,7 @@ function workout_getInfo() {
 
     var lastIdCurrentWorkout = [];
     db.transaction(function(tx) {
-        var rs = tx.executeSql('SELECT id,sport,distance,time,calories,hydration FROM `workouts_summary` ORDER BY id DESC LIMIT 1');
+        var rs = tx.executeSql('SELECT id,sport,distance,time,calories,hydration,(SELECT AVG(speed) FROM `workouts` WHERE id_workout=(SELECT id_workout FROM `workouts` ORDER BY id DESC LIMIT 1) AND speed>0) AS AvgSpeed FROM `workouts_summary` ORDER BY id DESC LIMIT 1');
         var ix;
         for (ix = 0; ix < rs.rows.length; ++ix) {
             lastIdCurrentWorkout = {    id: rs.rows.item(ix).id,
@@ -156,7 +184,8 @@ function workout_getInfo() {
                                         distance: rs.rows.item(ix).distance,
                                         time: rs.rows.item(ix).time,
                                         calories: rs.rows.item(ix).calories,
-                                        hydration: rs.rows.item(ix).hydration   };
+                                        hydration: rs.rows.item(ix).hydration,
+                                        avgspeed: rs.rows.item(ix).AvgSpeed    };
         }
     });
     return lastIdCurrentWorkout;
@@ -219,10 +248,10 @@ function workout_newstart() {
         workout_id = workout_id_sql.insertId    // SHOKARTA - jak to pouzit a poslat do viewu?
 
         var timestamp = Math.floor(Date.now() / 1000);
-        var gps_latitude = Math.random() * (50.399519 - 50.392956) + 50.392956; // SHOKARTA - GPS Latitude
-        var gps_longitude = Math.random() * (13.181750 - 13.171348) + 13.171348; // SHOKARTA - GPS Longitude
-        var gps_altitude = Math.random() * (390 - 320) + 320; // SHOKARTA - GPS Altitude
-        var bpm = 0; // SHOKARTA
+        var gps_latitude = Math.random() * (50.399 - 50.398) + 50.398; // SHOKARTA - GPS Latitude
+        var gps_longitude = Math.random() * (13.185 - 13.184) + 13.184; // SHOKARTA - GPS Longitude
+        var gps_altitude = Math.random() * (360 - 350) + 320; // SHOKARTA - GPS Altitude
+        var bpm = Math.floor(Math.random() * (189 - 75) + 75); // SHOKARTA
         var sql2 = 'INSERT INTO `workouts` (id_workout, timestamp, timespent, gps_latitude, gps_longitude, gps_altitude, bpm, distance, altitude_difference, speed, calories, hydratation) VALUES (' + workout_id + ', ' + timestamp + ', 0, ' + gps_latitude + ', ' + gps_longitude + ', ' + gps_altitude + ', ' + bpm + ', 0, 0, 0, 0, 0)';
         tx.executeSql(sql2);
 
@@ -300,10 +329,10 @@ function workout_refresh(id_workout, timerCheck) {
     db.transaction(function(tx) {
         var timestamp = Math.floor(Date.now() / 1000);
         var timespent = timerCheck;
-        var gps_latitude = Math.random() * (50.399519 - 50.392956) + 50.392956; // SHOKARTA - GPS Latitude
-        var gps_longitude = Math.random() * (13.181750 - 13.171348) + 13.171348; // SHOKARTA - GPS Longitude
-        var gps_altitude = Math.random() * (390 - 320) + 320; // SHOKARTA - GPS Altitude
-        var bpm = 0; // SHOKARTA
+        var gps_latitude = Math.random() * (50.399 - 50.398) + 50.398; // SHOKARTA - GPS Latitude
+        var gps_longitude = Math.random() * (13.185 - 13.184) + 13.184; // SHOKARTA - GPS Longitude
+        var gps_altitude = Math.random() * (360 - 350) + 320; // SHOKARTA - GPS Altitude
+        var bpm = Math.floor(Math.random() * (189 - 75) + 75); // SHOKARTA
 
         // Distance
         var distance =

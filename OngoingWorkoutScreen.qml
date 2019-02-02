@@ -9,153 +9,184 @@ Item {
     property var getSportName: DatabaseJS.sports
     property bool timerPaused: false
     property int countTimer: 0
-    property int masterTimerCount: 3570
+    property int masterTimerCount: 0
 
-    Component.onCompleted: {
-        DatabaseJS.workout_getInfo().lastIdCurrentWorkout = { id: 0, sport: 0, distance: 0, time: 0, calories: 0, hydration: 0 };
-        DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id']).lastInfoCurrentWorkout = { bpm: 0, speed: 0 };
-    }
+        //DatabaseJS.workout_getInfo().lastIdCurrentWorkout = { id: 0, sport: 0, distance: 0, time: 0, calories: 0, hydration: 0 };
+        //DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id']).lastInfoCurrentWorkout = { bpm: 0, speed: 0 };
 
     Rectangle {
         id: mainOngoingWorkout
         anchors.fill: parent
-        color: "black"
+        color: "transparent"
 
         Image {
             verticalAlignment: Image.AlignVCenter
             anchors.fill: parent
             width: parent.width
             height: parent.height
-            source: 'pics/' + (smSquared ? 'squared' : 'circled') + '.png'
-        }
-
-        // CALORIES
-        Rectangle {
-            id: mainOngoingWorkoutCalories
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: parent.height / 4
-            color: "transparent"
-
-            Label {
-                id: mainOngoingWorkoutCaloriesLabel
-                anchors.horizontalCenter: mainOngoingWorkoutCalories.horizontalCenter
-                anchors.bottom: mainOngoingWorkoutCalories.bottom
-                font.pointSize: 40
-                text: Math.floor(getCurrentWorkout['calories']) + ' kcal'
-                color: "white"
-            }
+            source: 'pics/background_ongoing.png'
         }
 
         // BPM
         Rectangle {
             id: mainOngoingWorkoutBPM
-            anchors.top: mainOngoingWorkoutCalories.bottom
+            anchors.top: parent.top
             anchors.left: parent.left
-            width: parent.width / 5 * 3
-            height: parent.height / 2.67
+            anchors.right: parent.right
+            height: mainOngoingWorkout.height / 3.33
             color: "transparent"
 
             Label {
                 id: mainOngoingWorkoutBPMLabel
-                anchors.right: mainOngoingWorkoutBPM.right
-                anchors.verticalCenter: mainOngoingWorkoutBPM.verticalCenter
-                font.pointSize: 90
-                text: getCurrentWorkoutInput['bpm']
-                color: "green"
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.pointSize: mainWindow.height / 7.27
+                text: getCurrentWorkoutInput['bpm'] < 1 ? "N/A" : getCurrentWorkoutInput['bpm'];
+                //color: DatabaseJS.getHZcolor(getCurrentWorkoutInput['bpm'])
+                color: DatabaseJS.getHZcolor(mainOngoingWorkoutBPMLabel.text)
             }
         }
+
+        // SPEED - DISTANCE
         Rectangle {
-            id: mainOngoingWorkoutBPMIcon
-            anchors.top: mainOngoingWorkoutCalories.bottom
+            id: mainOngoingWorkoutSpeedDistance
+            anchors.top: mainOngoingWorkoutBPM.bottom
+            anchors.left: parent.left
             anchors.right: parent.right
-            width: parent.width / 5 * 2
-            height: parent.height / 2.67
+            height: mainOngoingWorkout.height / 3.3
             color: "transparent"
 
-            AnimatedImage {
-                anchors.verticalCenter: mainOngoingWorkoutBPMIcon.verticalCenter
-                anchors.horizontalCenter: mainOngoingWorkoutBPMIcon.horizontalCenter
-                height: mainOngoingWorkoutBPMIcon.height / 5 * 3
-                fillMode: Image.PreserveAspectFit
-                source: 'pics/heartrate.gif'
+            // SPEED
+            Rectangle {
+                id: mainOngoingWorkoutSpeed
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                width: mainOngoingWorkout.width / 1.74
+                color: "transparent"
+
+                Label {
+                    id: mainOngoingWorkoutSpeedLabel
+                    anchors.top: parent.top
+                    anchors.topMargin: mainOngoingWorkoutSpeed.height/2 - (mainOngoingWorkoutSpeedLabel.height+mainOngoingWorkoutSpeedUnit.height)/2
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.pointSize: mainOngoingWorkout.height / 8.89
+                    text: Math.floor(getCurrentWorkoutInput['speed']) + ':' + formatSecs2(Math.floor((getCurrentWorkoutInput['speed'] - Math.floor(getCurrentWorkoutInput['speed'])).toFixed(2)*60))
+                    color: "white"
+                }
+                Label {
+                    id: mainOngoingWorkoutSpeedUnit
+                    anchors.horizontalCenter: mainOngoingWorkoutSpeedLabel.horizontalCenter
+                    anchors.top: mainOngoingWorkoutSpeedLabel.bottom
+                    font.pointSize: mainOngoingWorkout.height / 40
+                    text: 'min/km'
+                    color: "white"
+                }
+            }
+
+            // DISTANCE
+            Rectangle {
+                id: mainOngoingWorkoutDistance
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                width: parent.width - mainOngoingWorkoutSpeed.width
+                color: "transparent"
+
+                Label {
+                    id: mainOngoingWorkoutDistanceLabel
+                    anchors.top: parent.top
+                    anchors.topMargin: parent.height/2 - (mainOngoingWorkoutDistanceLabel.height+mainOngoingWorkoutDistanceLabelUnit.height)/2
+                    anchors.left: parent.left
+                    anchors.leftMargin: parent.width/2 - (mainOngoingWorkoutDistanceLabel.width+mainOngoingWorkoutDistanceLabel2.width)/2
+                    font.pointSize: mainOngoingWorkout.height / 8.89
+                    text: Math.floor(getCurrentWorkout['distance'])
+                    color: "white"
+                }
+                Label {
+                    id: mainOngoingWorkoutDistanceLabel2
+                    anchors.left: mainOngoingWorkoutDistanceLabel.right
+                    anchors.bottom: mainOngoingWorkoutDistanceLabel.bottom
+                    anchors.bottomMargin: mainOngoingWorkout.height / 150
+                    font.pointSize: mainOngoingWorkout.height / 13.33
+                    text: '.' + Math.round((getCurrentWorkout['distance'] - Math.floor(getCurrentWorkout['distance']))*10)
+                    color: "white"
+                }
+                Label {
+                    id: mainOngoingWorkoutDistanceLabelUnit
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: mainOngoingWorkoutDistanceLabel.bottom
+                    font.pointSize: mainOngoingWorkout.height / 40
+                    text: 'km'
+                    color: "white"
+                }
             }
         }
 
         // TIME ELAPSED
         Rectangle {
             id: mainOngoingWorkoutTime
-            anchors.top: mainOngoingWorkoutBPM.bottom
+            anchors.top: mainOngoingWorkoutSpeedDistance.bottom
             anchors.left: parent.left
-            width: (parent.width / 5 * 3) - 20
-            height: parent.height / 4
-            color: "transparent"
-
-            Label {
-                id: mainOngoingWorkoutTimeLabel
-                anchors.top: mainOngoingWorkoutTime.top
-                anchors.right: mainOngoingWorkoutTime.right
-                anchors.rightMargin: 15
-                font.pointSize: 35
-                text: formatSecs(masterTimerCount)
-                color: "white"
-            }
-        }
-        // DISTANCE
-        Rectangle {
-            id: mainOngoingWorkoutDistance
-            anchors.top: mainOngoingWorkoutBPM.bottom
             anchors.right: parent.right
-            width: (parent.width / 5 * 2) + 20
-            height: parent.height / 4
+            anchors.bottom: stopButton.top
             color: "transparent"
 
             Label {
-                id: mainOngoingWorkoutDistanceLabel
-                anchors.top: mainOngoingWorkoutDistance.top
-                anchors.left: mainOngoingWorkoutDistance.left
-                font.pointSize: 30
-                text: getCurrentWorkout['distance'].toFixed(2)
-                color: "darkgreen"
+                id: mainOngoingWorkoutTimeLabelHours
+                anchors.right: mainOngoingWorkoutTimeLabelMinutes.left
+                anchors.verticalCenter: parent.verticalCenter
+                font.pointSize: mainOngoingWorkout.height / 13.33
+                text: formatSecs2(Math.floor(masterTimerCount/3600)) + ':'
+                color: "white"
             }
             Label {
-                id: mainOngoingWorkoutDistanceUnitLabel
-                anchors.bottom: mainOngoingWorkoutDistanceLabel.bottom
-                anchors.left: mainOngoingWorkoutDistanceLabel.right
-                anchors.bottomMargin: 2
-                font.pointSize: 20
-                text: 'km'
+                id: mainOngoingWorkoutTimeLabelMinutes
+                anchors.centerIn: parent
+                font.pointSize: mainOngoingWorkout.height / 8
+                text: formatSecs2(Math.floor((masterTimerCount-(Math.floor(masterTimerCount/3600)*3600))/60))
+                color: "white"
+            }
+            Label {
+                id: mainOngoingWorkoutTimeLabelSeconds
+                anchors.left: mainOngoingWorkoutTimeLabelMinutes.right
+                anchors.verticalCenter: parent.verticalCenter
+                font.pointSize: mainOngoingWorkout.height / 13.33
+                text: ':' + formatSecs2(Math.floor(masterTimerCount-(Math.floor(masterTimerCount/3600)*3600)-(Math.floor((masterTimerCount-(Math.floor(masterTimerCount/3600)*3600))/60)*60)))
                 color: "white"
             }
         }
+
 
         // STOP BUTTON
         DelayButton  {
             id: stopButton
-            text: elapsedTimer.running ? "PAUSE" : "CONTINUE"
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: mainOngoingWorkout.height / 5.715
             delay: 2000
-            width: parent.width
-            height: 70
 
-            anchors {
-                left: parent.left
-                right: parent.right
-                bottom: parent.bottom
+            Label {
+                id: stopButtonLabel
+                anchors.centerIn: parent
+                font.pointSize: mainOngoingWorkout.height / 26.67
+                color: "black"
+                text: elapsedTimer.running ? "PAUSE" : "CONTINUE"
             }
 
             background:
                 Rectangle {
                 id: mainBackground
                 anchors.centerIn: parent
-                border.width: 3
+                border.width: mainOngoingWorkout.width / 133.33
                 border.color: "darkgreen"
-                radius: 15
+                radius: mainOngoingWorkout.width / 26.67
                 width: parent.height
                 height: parent.width
                 rotation: 270
                 gradient: Gradient {
-                    GradientStop { position: stopButton.progress-0.1; color: "green" }
+                    GradientStop { position: stopButton.progress-(mainOngoingWorkout.width / 2666.67); color: "green" }
                     GradientStop { position: stopButton.progress; color: "lightgreen" }
                 }
             }

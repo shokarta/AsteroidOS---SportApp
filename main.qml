@@ -5,6 +5,7 @@ import QtPositioning 5.2
 import 'DatabaseJS.js' as DatabaseJS
 
 ApplicationWindow {
+    id: mainWindow
     visible: true
     width: 400
     height: 400
@@ -20,16 +21,20 @@ ApplicationWindow {
     property int dbSize: 1000000
     property var db
 
-    property var getProfile: DatabaseJS.db_getProfile()
-    property var getSummaryWorkouts: DatabaseJS.getSummaryWorkouts()
-    property var getCurrentWorkout: DatabaseJS.workout_getInfo()
-    property var getCurrentWorkoutInput: DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id'])
+    property var getProfile
+    property var getSummaryWorkouts
+    property var getCurrentWorkout
+    property var getCurrentWorkoutInput
 
 
     // constructor
     Component.onCompleted: {
         // Creates tables if not already created
         DatabaseJS.db_createTable();
+        getProfile = DatabaseJS.db_getProfile();
+        getSummaryWorkouts = DatabaseJS.getSummaryWorkouts();
+        getCurrentWorkout = DatabaseJS.workout_getInfo()
+        getCurrentWorkoutInput = DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id'])
     }
 
     function formatSecs(secs) {
@@ -42,12 +47,17 @@ ApplicationWindow {
         if(h>0) { return (h + ':' + pad(m) + ':' + pad(s)); }
         else { return (pad(m) + ':' + pad(s)); }
     }
+    function formatSecs2(secs) {
+
+        return (secs < 10) ? '0' + secs : secs;
+    }
 
     StackView {
         id: stackView
         anchors.fill: parent
 
         initialItem: welcomeScreen
+        //currentIndex: 1
     }
 
     Component {

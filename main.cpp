@@ -1,6 +1,6 @@
-#include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QDebug>
+#include <QGuiApplication>
+#include <QtQml>
 
 int main(int argc, char *argv[])
 {
@@ -8,7 +8,6 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    qDebug() << engine.offlineStoragePath();
 
     return app.exec();
 }
