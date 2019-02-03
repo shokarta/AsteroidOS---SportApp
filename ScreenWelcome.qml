@@ -7,6 +7,7 @@ import 'DatabaseJS.js' as DatabaseJS
 Item {
 
     Component.onCompleted: {
-        DatabaseJS.db_checkProfile();
+        DatabaseJS.db_createTable();
+        DatabaseJS.workout_getInfo();
     }
 }

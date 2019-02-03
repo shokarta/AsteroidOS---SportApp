@@ -1,5 +1,6 @@
 // SPORTS
 var sports = [];
+sports[0] = { name: "None",  factor: 0 };
 sports[1] = { name: "Running",  factor: 1 };
 sports[2] = { name: "Walking",  factor: 2 };
 sports[3] = { name: "Swimming", factor: 3 };
@@ -13,8 +14,8 @@ genderRecount['Female'] = { calories_factor: 20.4022, age_factor: 0.0074, weight
 // HEART RATE ZONES DETERMINE
 function getHZcolor(bpm_input) {
     var maxHR;
-    if (db_getProfile().gender === "Male") {  maxHR = 214 - db_getProfile().age * 0.8; }
-    else { maxHR = maxHR = 209 - db_getProfile().age * 0.8; }
+    if (profile.gender === "Male") {  maxHR = 214 - getAge(profile.age) * 0.8; }
+    else { maxHR = maxHR = 209 - getAge(profile.age) * 0.8; }
 
     var HZcolor;
     // N/A
@@ -47,7 +48,7 @@ function db_createTable() {
     db.transaction(function(tx) { tx.executeSql('CREATE TABLE IF NOT EXISTS `profile` ('
                                                 + 'id INTEGER PRIMARY KEY AUTOINCREMENT,'
                                                 + 'gender VARCHAR(10) NOT NULL,'
-                                                + 'age TINYINT NOT NULL,'
+                                                + 'age DATE NOT NULL,'
                                                 + 'weight DOUBLE NOT NULL)'); });
     // SHOKARTA: id autoincrement only now, later to be have to be online while register profile so master database on internet will provide id number
 
@@ -66,7 +67,7 @@ function db_createTable() {
                                                 + 'speed DOUBLE NOT NULL,'
                                                 + 'calories DOUBLE NOT NULL,'
                                                 + 'hydratation DOUBLE NOT NULL)'); });
-    // `workouts_summary` (sport, distance, time, calories, hydration)
+
     // create table for workouts summary if doesnt exists yet
     db.transaction(function(tx) { tx.executeSql('CREATE TABLE IF NOT EXISTS `workouts_summary` ('
                                                 + 'id INTEGER PRIMARY KEY AUTOINCREMENT,'
@@ -75,22 +76,20 @@ function db_createTable() {
                                                 + 'time DOUBLE NOT NULL,'
                                                 + 'calories DOUBLE NOT NULL,'
                                                 + 'hydration DOUBLE NOT NULL)'); });
-}
-function db_checkProfile() {
-    // open database connection
-    db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
 
     db.transaction(function(tx) {
-        var rs = tx.executeSql('SELECT count(*) AS checkCount FROM sqlite_master WHERE type=\'table\' AND name=\'profile\'');
+        var rs = tx.executeSql('SELECT count(*) AS checkCount FROM \'profile\'');
         var myAmount = rs.rows.item(0).checkCount;
 
-        if (myAmount < 1) { stackView.push(registerProfile1); }
-
-        var rs2 = tx.executeSql('SELECT count(id) AS checkCount2 FROM profile');
-        var myAmount2 = rs2.rows.item(0).checkCount2;
-
-        if (myAmount2 < 1) { stackView.push(registerProfile1); }
-        else {               stackView.push(mainScreen); }
+        if (myAmount < 1) {
+            db.transaction(function(tx) {
+                var sql = 'INSERT INTO `profile` (gender,age,weight) VALUES (0, 0, 0)';
+                tx.executeSql(sql);
+                db_getProfile();
+                stackView.push(registerProfile1);
+            });
+        }
+        else { db_getProfile(); stackView.push(mainScreen); }
     });
 }
 
@@ -103,45 +102,40 @@ function db_getProfile() {
         var rs = tx.executeSql('SELECT id,gender,age,weight FROM `profile`');
         var ix;
         for (ix = 0; ix < rs.rows.length; ++ix) {
-            myVarriable = {id: rs.rows.item(ix).id, gender: rs.rows.item(ix).gender, age: rs.rows.item(ix).age, weight: rs.rows.item(ix).weight};
-            //              myVarriable = [rs.rows.item(ix).id, rs.rows.item(ix).gender, rs.rows.item(ix).age, rs.rows.item(ix).weight];
+            profile = { id: rs.rows.item(ix).id,
+                        gender: rs.rows.item(ix).gender,
+                        age: rs.rows.item(ix).age,
+                        weight: rs.rows.item(ix).weight };
         }
     });
-    return myVarriable;
 }
 
 function db_saveProfile1() {
-
     // open database connection
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
 
-    var gender = genderTextField.currentText;
     db.transaction(function(tx) {
-        var sql = 'INSERT INTO `profile` (gender,age,weight) VALUES (\'' + gender + '\', 0, 0)';
+        var sql = 'UPDATE `profile` SET gender=\'' + genderChosen + '\' WHERE id=1';
         tx.executeSql(sql);
         stackView.push(registerProfile2);
     });
 }
 function db_saveProfile2() {
-
     // open database connection
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
 
-    var age = ageTextField.text;
     db.transaction(function(tx) {
-        var sql = 'UPDATE `profile` SET age=' + age + ' WHERE id=1';
+        var sql = 'UPDATE `profile` SET age=\'' + ageTextFieldYear.text + '-' + formatSecs2(parseInt(ageTextFieldMonth.text,10)) + '-' + formatSecs2(parseInt(ageTextFieldDay.text,10)) + '\' WHERE id=1';
         tx.executeSql(sql);
         stackView.push(registerProfile3);
     });
 }
 function db_saveProfile3() {
-
     // open database connection
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
 
-    var weight = weightTextField.text;
     db.transaction(function(tx) {
-        var sql = 'UPDATE `profile` SET weight=' + weight + ' WHERE id=1';
+        var sql = 'UPDATE `profile` SET weight=' + weightTextField.text + ' WHERE id=1';
         tx.executeSql(sql);
         stackView.push(mainScreen);
     });
@@ -150,22 +144,17 @@ function db_saveProfile3() {
 
 
 function db_saveProfile() {
-
     // open database connection
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
 
-    var gender = genderTextField.currentText;
-    var age = ageTextField.text;
-    var weight = weightTextField.text;
     db.transaction(function(tx) {
-        var sql = 'INSERT INTO `profile` (gender,age,weight) VALUES (\'' + gender + '\',' + age + ',' + weight + ')';
+        var sql = 'INSERT INTO `profile` (gender,age,weight) VALUES (\'' + genderTextField.currentText + '\',' + ageTextField.text + ',' + weightTextField.text + ')';
         tx.executeSql(sql);
     });
 }
 
 
 // PUSH
-
 function push_start(site) {
     stackView.push(site);
 }
@@ -174,28 +163,38 @@ function workout_getInfo() {
     // open database connection
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
 
-    var lastIdCurrentWorkout = [];
     db.transaction(function(tx) {
-        var rs = tx.executeSql('SELECT id,sport,distance,time,calories,hydration,(SELECT AVG(speed) FROM `workouts` WHERE id_workout=(SELECT id_workout FROM `workouts` ORDER BY id DESC LIMIT 1) AND speed>0) AS AvgSpeed FROM `workouts_summary` ORDER BY id DESC LIMIT 1');
+        var rs = tx.executeSql('SELECT id,sport,distance,time,calories,hydration,(SELECT AVG(speed) FROM `workouts` WHERE id_workout=(SELECT id_workout FROM `workouts` ORDER BY id DESC LIMIT 1) AND speed>0) AS AvgSpeed, (SELECT timestamp FROM `workouts` WHERE id_workout=(SELECT id_workout FROM `workouts` ORDER BY id DESC LIMIT 1)) AS Date FROM `workouts_summary` ORDER BY id DESC LIMIT 1');
         var ix;
-        for (ix = 0; ix < rs.rows.length; ++ix) {
-            lastIdCurrentWorkout = {    id: rs.rows.item(ix).id,
-                                        sport: rs.rows.item(ix).sport,
-                                        distance: rs.rows.item(ix).distance,
-                                        time: rs.rows.item(ix).time,
-                                        calories: rs.rows.item(ix).calories,
-                                        hydration: rs.rows.item(ix).hydration,
-                                        avgspeed: rs.rows.item(ix).AvgSpeed    };
+        if (rs.rows.length > 0) {
+            for (ix = 0; ix < rs.rows.length; ++ix) {
+                lastIdCurrentWorkout = {    id: rs.rows.item(ix).id,
+                                            sport: rs.rows.item(ix).sport,
+                                            distance: rs.rows.item(ix).distance,
+                                            time: rs.rows.item(ix).time,
+                                            calories: rs.rows.item(ix).calories,
+                                            hydration: rs.rows.item(ix).hydration,
+                                            avgspeed: rs.rows.item(ix).AvgSpeed,
+                                            date: rs.rows.item(ix).Date             };
+            }
+        }
+        else {
+                lastIdCurrentWorkout = {    id: 0,
+                                            sport: 0,
+                                            distance: 0,
+                                            time: 0,
+                                            calories: 0,
+                                            hydration: 0,
+                                            avgspeed: 0,
+                                            date: 0         };
         }
     });
-    return lastIdCurrentWorkout;
 }
 
 function getSummaryWorkouts() {
     // open database connection
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
 
-    var summaryWorkouts = [];
     db.transaction(function(tx) {
         var rs = tx.executeSql('SELECT count(id) AS var1,sum(distance) AS var2,sum(time) AS var3,sum(calories) AS var4,sum(hydration) AS var5 FROM `workouts_summary`');
             if (rs.rows.item(0).var1 > 0) {
@@ -213,7 +212,6 @@ function getSummaryWorkouts() {
                                      amountHydration: 0   };
             }
     });
-    return summaryWorkouts;
 }
 
 function workout_getInfoFromWorkout(id_workout) {
@@ -221,10 +219,11 @@ function workout_getInfoFromWorkout(id_workout) {
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
 
     db.transaction(function(tx) {
-        var rs = tx.executeSql('SELECT speed,bpm FROM `workouts` WHERE id_workout='+ id_workout +' ORDER BY id DESC LIMIT 1');
+        var rs = tx.executeSql('SELECT speed,bpm,distance FROM `workouts` WHERE id_workout='+ id_workout +' ORDER BY id DESC LIMIT 1');
         for (var ix = 0; ix < rs.rows.length; ++ix) {
-            getCurrentWorkoutInputTest.clear();
-            getCurrentWorkoutInputTest.append({"bpm": rs.rows.item(ix).bpm, "speed": rs.rows.item(ix).speed});
+            currentWorkout = {  bpm: rs.rows.item(ix).bpm,
+                                speed: rs.rows.item(ix).speed,
+                                distance: rs.rows.item(ix).distance };
         }
     });
 }
@@ -240,15 +239,14 @@ function workout_newstart() {
         tx.executeSql(sql1);
 
         // ID of the new workout
-        var workout_id = 0;
         var workout_id_sql = tx.executeSql('SELECT last_insert_rowid()')
-        workout_id = workout_id_sql.insertId    // SHOKARTA - jak to pouzit a poslat do viewu?
+        workout_id = workout_id_sql.insertId
 
         var timestamp = Math.floor(Date.now() / 1000);
         var gps_latitude = Math.random() * (50.399 - 50.398) + 50.398; // SHOKARTA - GPS Latitude
         var gps_longitude = Math.random() * (13.185 - 13.184) + 13.184; // SHOKARTA - GPS Longitude
         var gps_altitude = Math.random() * (360 - 350) + 320; // SHOKARTA - GPS Altitude
-        var bpm = Math.floor(Math.random() * (189 - 75) + 75); // SHOKARTA
+        var bpm = Math.floor(Math.random() * (189 - 150) + 150); // SHOKARTA - BPM
         var sql2 = 'INSERT INTO `workouts` (id_workout, timestamp, timespent, gps_latitude, gps_longitude, gps_altitude, bpm, distance, altitude_difference, speed, calories, hydratation) VALUES (' + workout_id + ', ' + timestamp + ', 0, ' + gps_latitude + ', ' + gps_longitude + ', ' + gps_altitude + ', ' + bpm + ', 0, 0, 0, 0, 0)';
         tx.executeSql(sql2);
 
@@ -263,7 +261,6 @@ function workout_refresh(id_workout, timerCheck) {
     db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
 
     // gets current info from current workout
-    var lastWorkoutSummary = [];
     db.transaction(function(tx) {
         var rs = tx.executeSql('SELECT sport,distance,time,calories,hydration FROM `workouts_summary` WHERE id=' + id_workout);
         var ix;
@@ -329,7 +326,7 @@ function workout_refresh(id_workout, timerCheck) {
         var gps_latitude = Math.random() * (50.399 - 50.398) + 50.398; // SHOKARTA - GPS Latitude
         var gps_longitude = Math.random() * (13.185 - 13.184) + 13.184; // SHOKARTA - GPS Longitude
         var gps_altitude = Math.random() * (360 - 350) + 320; // SHOKARTA - GPS Altitude
-        var bpm = Math.floor(Math.random() * (189 - 75) + 75); // SHOKARTA
+        var bpm = Math.floor(Math.random() * (189 - 150) + 150); // SHOKARTA
 
         // Distance
         var distance =
@@ -349,14 +346,13 @@ function workout_refresh(id_workout, timerCheck) {
 
         // Calories
         var calories;
-        var profile = db_getProfile();
         if(bpm > 0) {
             calories =
-                (profile.age * genderRecount[profile.gender].age_factor) -
-                ((profile.weight * 2,20462262) * genderRecount[profile.gender].weight_factor) +
-                (bpm * genderRecount[profile.gender].heartrate_factor) -
-                (genderRecount[profile.gender].calories_factor) *
-                ((timespent / 60) / 4.184);
+                    ((getAge(profile.age) * genderRecount[profile.gender].age_factor) -
+                    ((profile.weight * 2.20462262) * genderRecount[profile.gender].weight_factor) +
+                    (bpm * genderRecount[profile.gender].heartrate_factor) -
+                    genderRecount[profile.gender].calories_factor) *
+                    (((timespent) / 60 ) / 4.184);
         }
         else { calories = sports[lastWorkoutSummary.sport].factor * profile.weight * distance; }
         if (calories < 0) { calories = 0; }
@@ -390,4 +386,18 @@ function workout_refresh(id_workout, timerCheck) {
             tx.executeSql(sql);
         });
     });
+}
+
+// Workout Refresh
+function workout_delete(id_workout) {
+    // open database connection
+    db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
+
+    // gets current info from current workout
+    db.transaction(function(tx) {
+        tx.executeSql('DELETE FROM `workouts` WHERE id_workout=' + id_workout);
+        tx.executeSql('DELETE FROM `workouts_summary` WHERE id=' + id_workout);
+    });
+    workout_getInfo();
+    stackView.push(mainScreen);
 }

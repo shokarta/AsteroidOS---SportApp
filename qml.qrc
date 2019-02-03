@@ -7,9 +7,13 @@
         <file>RegisterProfile3.qml</file>
         <file>ScreenWelcome.qml</file>
         <file>MainScreen.qml</file>
-        <file>pics/Female.png</file>
-        <file>pics/Male.png</file>
         <file>OngoingWorkoutScreen.qml</file>
         <file>pics/background_ongoing.png</file>
+        <file>pics/Female_clicked.png</file>
+        <file>pics/Female_unclicked.png</file>
+        <file>pics/Male_clicked.png</file>
+        <file>pics/Male_unclicked.png</file>
+        <file>pics/Female.png</file>
+        <file>pics/Male.png</file>
     </qresource>
 </RCC>

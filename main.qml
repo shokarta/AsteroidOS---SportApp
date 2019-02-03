@@ -11,6 +11,16 @@ ApplicationWindow {
     height: 400
     title: qsTr("Sports App")
 
+    property var currentWorkout
+    property var profile
+    property var lastIdCurrentWorkout
+    property var summaryWorkouts
+    property var workout_id
+    property var lastWorkoutSummary
+
+    property var genderChosen: profile['gender']
+    property bool updateProfile
+
     // Watch setting
     property bool smSquared: false
 
@@ -20,21 +30,6 @@ ApplicationWindow {
     property string dbDescription: "Database application"
     property int dbSize: 1000000
     property var db
-
-    property var getProfile
-    property var getSummaryWorkouts
-    property var getCurrentWorkout: DatabaseJS.workout_getInfo()
-    property var getCurrentWorkoutInput: DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id'])
-
-    ListModel { id: getCurrentWorkoutInputTest }
-
-    // constructor
-    Component.onCompleted: {
-        // Creates tables if not already created
-        DatabaseJS.db_createTable();
-        getProfile = DatabaseJS.db_getProfile();
-        getSummaryWorkouts = DatabaseJS.getSummaryWorkouts();
-    }
 
     function formatSecs(secs) {
         var h = Math.floor(secs/3600);
@@ -47,8 +42,25 @@ ApplicationWindow {
         else { return (pad(m) + ':' + pad(s)); }
     }
     function formatSecs2(secs) {
-
         return (secs < 10) ? '0' + secs : secs;
+    }
+    function getAge(dateString) {
+        var today = new Date();
+        var birthDate = new Date(dateString);
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+    function getDateFromTimestamp(time) {
+        if (time > 0) {
+            var date = new Date(time*1000);// hours part from the timestamp
+            var day;
+            return date.getDate() + '.' + date.getMonth()+1 + '.' + date.getFullYear();
+        }
+        else { return 'None'; }
     }
 
     StackView {

@@ -6,18 +6,20 @@ import 'DatabaseJS.js' as DatabaseJS
 
 Item {
 
+    Component.onCompleted: {
+        DatabaseJS.workout_getInfo(workout_id);
+        DatabaseJS.workout_getInfoFromWorkout(workout_id);
+    }
+
     property var getSportName: DatabaseJS.sports
     property bool timerPaused: false
     property int countTimer: 0
     property int masterTimerCount: 0
 
-        //DatabaseJS.workout_getInfo().lastIdCurrentWorkout = { id: 0, sport: 0, distance: 0, time: 0, calories: 0, hydration: 0 };
-        //DatabaseJS.workout_getInfoFromWorkout(getCurrentWorkout['id']).lastInfoCurrentWorkout = { bpm: 0, speed: 0 };
-
     Rectangle {
         id: mainOngoingWorkout
         anchors.fill: parent
-        color: "transparent"
+        color: "black"
 
         Image {
             verticalAlignment: Image.AlignVCenter
@@ -41,8 +43,8 @@ Item {
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pointSize: mainWindow.height / 7.27
-                text: getCurrentWorkoutInputTest.get(0).bpm
-                color: DatabaseJS.getHZcolor(getCurrentWorkoutInputTest.get(0).bpm)
+                text: currentWorkout['bpm']
+                color: DatabaseJS.getHZcolor(currentWorkout['bpm'])
             }
         }
 
@@ -69,15 +71,15 @@ Item {
                     anchors.top: parent.top
                     anchors.topMargin: mainOngoingWorkoutSpeed.height/2 - (mainOngoingWorkoutSpeedLabel.height+mainOngoingWorkoutSpeedUnit.height)/2
                     anchors.horizontalCenter: parent.horizontalCenter
-                    font.pointSize: mainOngoingWorkout.height / 8.89
-                    text: Math.floor(getCurrentWorkoutInputTest.get(0).speed) + ':' + formatSecs2(Math.floor((getCurrentWorkoutInputTest.get(0).speed - Math.floor(getCurrentWorkoutInputTest.get(0).speed)).toFixed(2)*60))
+                    font.pointSize: mainWindow.height / 8.89
+                    text: Math.floor(currentWorkout['speed']) + ':' + formatSecs2(Math.floor((currentWorkout['speed'] - Math.floor(currentWorkout['speed'])).toFixed(2)*60))
                     color: "white"
                 }
                 Label {
                     id: mainOngoingWorkoutSpeedUnit
                     anchors.horizontalCenter: mainOngoingWorkoutSpeedLabel.horizontalCenter
                     anchors.top: mainOngoingWorkoutSpeedLabel.bottom
-                    font.pointSize: mainOngoingWorkout.height / 40
+                    font.pointSize: mainWindow.height / 40
                     text: 'min/km'
                     color: "white"
                 }
@@ -98,8 +100,8 @@ Item {
                     anchors.topMargin: parent.height/2 - (mainOngoingWorkoutDistanceLabel.height+mainOngoingWorkoutDistanceLabelUnit.height)/2
                     anchors.left: parent.left
                     anchors.leftMargin: parent.width/2 - (mainOngoingWorkoutDistanceLabel.width+mainOngoingWorkoutDistanceLabel2.width)/2
-                    font.pointSize: mainOngoingWorkout.height / 8.89
-                    text: Math.floor(getCurrentWorkout['distance'])
+                    font.pointSize: mainWindow.height / 8.89
+                    text: Math.floor(lastIdCurrentWorkout['distance'])
                     color: "white"
                 }
                 Label {
@@ -107,15 +109,15 @@ Item {
                     anchors.left: mainOngoingWorkoutDistanceLabel.right
                     anchors.bottom: mainOngoingWorkoutDistanceLabel.bottom
                     anchors.bottomMargin: mainOngoingWorkout.height / 150
-                    font.pointSize: mainOngoingWorkout.height / 13.33
-                    text: '.' + Math.round((getCurrentWorkout['distance'] - Math.floor(getCurrentWorkout['distance']))*10)
+                    font.pointSize: mainWindow.height / 13.33
+                    text: '.' + Math.round((lastIdCurrentWorkout['distance'] - Math.floor(lastIdCurrentWorkout['distance']))*10)
                     color: "white"
                 }
                 Label {
                     id: mainOngoingWorkoutDistanceLabelUnit
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: mainOngoingWorkoutDistanceLabel.bottom
-                    font.pointSize: mainOngoingWorkout.height / 40
+                    font.pointSize: mainWindow.height / 40
                     text: 'km'
                     color: "white"
                 }
@@ -135,14 +137,14 @@ Item {
                 id: mainOngoingWorkoutTimeLabelHours
                 anchors.right: mainOngoingWorkoutTimeLabelMinutes.left
                 anchors.verticalCenter: parent.verticalCenter
-                font.pointSize: mainOngoingWorkout.height / 13.33
+                font.pointSize: mainWindow.height / 13.33
                 text: formatSecs2(Math.floor(masterTimerCount/3600)) + ':'
                 color: "white"
             }
             Label {
                 id: mainOngoingWorkoutTimeLabelMinutes
                 anchors.centerIn: parent
-                font.pointSize: mainOngoingWorkout.height / 8
+                font.pointSize: mainWindow.height / 8
                 text: formatSecs2(Math.floor((masterTimerCount-(Math.floor(masterTimerCount/3600)*3600))/60))
                 color: "white"
             }
@@ -150,7 +152,7 @@ Item {
                 id: mainOngoingWorkoutTimeLabelSeconds
                 anchors.left: mainOngoingWorkoutTimeLabelMinutes.right
                 anchors.verticalCenter: parent.verticalCenter
-                font.pointSize: mainOngoingWorkout.height / 13.33
+                font.pointSize: mainWindow.height / 13.33
                 text: ':' + formatSecs2(Math.floor(masterTimerCount-(Math.floor(masterTimerCount/3600)*3600)-(Math.floor((masterTimerCount-(Math.floor(masterTimerCount/3600)*3600))/60)*60)))
                 color: "white"
             }
@@ -169,7 +171,7 @@ Item {
             Label {
                 id: stopButtonLabel
                 anchors.centerIn: parent
-                font.pointSize: mainOngoingWorkout.height / 26.67
+                font.pointSize: mainWindow.height / 26.67
                 color: "black"
                 text: elapsedTimer.running ? "PAUSE" : "CONTINUE"
             }
@@ -224,7 +226,9 @@ Item {
             repeat: true
             onTriggered: {
                 countTimer = countTimer + (elapsedTimer.interval/1000);
-                DatabaseJS.workout_refresh(getCurrentWorkout['id'], countTimer);
+                DatabaseJS.workout_refresh(workout_id, countTimer);
+                DatabaseJS.workout_getInfo();
+                DatabaseJS.workout_getInfoFromWorkout(workout_id)
                 countTimer = 0;
             }
         }

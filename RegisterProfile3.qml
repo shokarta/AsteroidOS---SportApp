@@ -8,48 +8,58 @@ Item {
     id: parentObject
 
     Rectangle {
-        id: noteLabel
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: 50
+        anchors.fill: parent
+        color: 'black'
 
-        Label {
+        Rectangle {
+            id: noteLabel
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: mainWindow.height / 8
+            color: 'transparent'
+
+            Label {
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.pointSize: Math.min(mainWindow.height, mainWindow.width) / 20
+                text: 'Set your weight in kg:'
+                color: 'white'
+            }
+        }
+
+        Rectangle {
+            anchors.top: noteLabel.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pointSize: 15
-            text: 'Please set your current weight in kg:'
-        }
-    }
+            height: mainWindow.height / 8
+            color: 'transparent'
 
-    Rectangle {
-        anchors.top: noteLabel.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        height: 50
-
-        TextField {
-            id: weightTextField
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: 100
-        }
-    }
-
-    Button {
-        id: saveButton
-        text: 'PROCEED' // SAVE
-        width: parent.width
-        height: 50
-
-        anchors {
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
+            TextField {
+                id: weightTextField
+                anchors.top: parent.top
+                anchors.topMargin: mainWindow.height / 16
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: mainWindow.width / 4
+                text: profile['weight'] ? profile['weight'] : '';
+            }
         }
 
-        onClicked: {
-            DatabaseJS.db_saveProfile3();
+        Button {
+            id: saveButton
+            text: 'PROCEED' // SAVE
+            height: mainWindow.height / 8
+
+            anchors {
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+            }
+
+            onClicked: {
+                DatabaseJS.db_saveProfile3();
+            }
         }
     }
 }

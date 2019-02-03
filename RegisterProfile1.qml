@@ -7,71 +7,84 @@ import 'DatabaseJS.js' as DatabaseJS
 Item {
     id: parentObject
 
-    Rectangle {
-        id: noteLabel
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: 100
-
-        Label {
-            id: label1
-            anchors.bottom: label2.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pointSize: 15
-            text: 'In order to provide accurate'
-        }
-        Label {
-            id: label2
-            anchors.bottom: label3.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pointSize: 15
-            text: 'calculations we need to'
-        }
-        Label {
-            id: label3
-            anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pointSize: 15
-            text: 'set up your profile first'
+    Component.onCompleted: {
+        if (updateProfile==true) { parentObject.anchors.fill = parent; }
+        if(profile['gender']) {
+            genderChosen = profile['gender'];
+            if(genderChosen==='Male') { genderMale.source = 'pics/Male_clicked.png'; }
+            else if (genderChosen==='Female') { genderFemale.source = 'pics/Female_clicked.png'; }
         }
     }
 
     Rectangle {
-        anchors.top: noteLabel.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        height: 50
+        anchors.fill: parent
+        color: "black"
 
-        ComboBox {
-            id: genderTextField
-            currentIndex: 0
-            editable: false
-            width: 200
-            anchors.horizontalCenter: parent.horizontalCenter
-            model: ListModel {
-                id: genderListModel
-                ListElement { text: "Male" }
-                ListElement { text: "Female" }
+        Rectangle {
+            id: noteLabel
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: mainWindow.height / 8
+            color: "transparent"
+
+            Label {
+                id: label1
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                font.pointSize: Math.min(mainWindow.height, mainWindow.width) / 20
+                text: 'Choose your gender:'
+                color: "white"
             }
         }
-    }
 
-    Button {
-        id: saveButton
-        text: 'PROCEED' // SAVE
-        width: parent.width
-        height: 50
+        Rectangle {
+            anchors.top: noteLabel.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 50
+            color: "transparent"
 
-        anchors {
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-        }
+            Image {
+                id: genderMale
+                anchors.top: parent.top
+                anchors.topMargin: parent.height/2 - genderMale.height/2
+                anchors.left: parent.left
+                anchors.leftMargin: parent.width/4 - genderMale.width/2
+                fillMode: Image.PreserveAspectFit
+                height: Math.min(mainWindow.height, mainWindow.width) / 1.42
+                source: if(genderChosen==="Male") { genderMale.source = 'pics/Male_clicked.png'; genderChosen='Male'; } else { genderMale.source = 'pics/Male_unclicked.png'; }
+            }
+            MouseArea {
+                anchors.fill: genderMale
+                onClicked: {
+                    genderMale.source = 'pics/Male_clicked.png';
+                    genderFemale.source = 'pics/Female_unclicked.png';
+                    genderChosen = 'Male';
+                    DatabaseJS.db_saveProfile1(genderChosen);
+                }
+            }
 
-        onClicked: {
-            DatabaseJS.db_saveProfile1();
+            Image {
+                id: genderFemale
+                anchors.top: parent.top
+                anchors.topMargin: parent.height/2 - genderFemale.height/2
+                anchors.right: parent.right
+                anchors.rightMargin: parent.width/4 - genderFemale.width/2
+                fillMode: Image.PreserveAspectFit
+                height: Math.min(mainWindow.height, mainWindow.width) / 1.42
+                source: if(genderChosen==='Female') { genderFemale.source = 'pics/Female_clicked.png'; genderChosen='Female'; } else { genderFemale.source = 'pics/Female_unclicked.png'; }
+            }
+            MouseArea {
+                anchors.fill: genderFemale
+                onClicked: {
+                    genderMale.source = 'pics/Male_unclicked.png';
+                    genderFemale.source = 'pics/Female_clicked.png';
+                    genderChosen = 'Female';
+                    DatabaseJS.db_saveProfile1(genderChosen);
+                }
+            }
         }
     }
 }
