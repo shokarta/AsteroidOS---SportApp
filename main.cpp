@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     QTranslator translator;
-    translator.load(QLocale(), "asteroid-sportapp", ".", "/i18n");
+    translator.load(QLocale(), "c:/asteroid/asteroid-sporttracking-master", ".", "i18n", ".gm");
     app.installTranslator(&translator);
 
     return app.exec();

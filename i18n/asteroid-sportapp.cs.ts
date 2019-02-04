@@ -1,30 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en_GB">
+<TS version="2.1" language="cs">
 <context>
     <name></name>
     <message id="sport-spp">
         <location filename="../main.qml" line="12"/>
-        <source></source>
-        <oldsource>Sport Application</oldsource>
+        <source>Sport Application</source>
         <translation>Sport Application</translation>
     </message>
     <message id="id-none">
         <location filename="../main.qml" line="63"/>
-        <source></source>
-        <oldsource>None</oldsource>
+        <source>None</source>
         <translation>None</translation>
     </message>
     <message id="id-rowId">
         <location filename="../MainScreen.qml" line="56"/>
-        <source></source>
-        <oldsource>ID</oldsource>
+        <source>ID</source>
         <translation>ID</translation>
     </message>
     <message id="id-rowGender">
         <location filename="../MainScreen.qml" line="64"/>
-        <source></source>
-        <oldsource>Gender</oldsource>
+        <source>Gender</source>
         <translation>Gender</translation>
     </message>
     <message id="id-rowAge">
