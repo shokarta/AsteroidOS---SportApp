@@ -20,10 +20,11 @@ Item {
             color: 'transparent'
 
             Label {
+                id: weightLabel
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pointSize: Math.min(mainWindow.height, mainWindow.width) / 20
-                text: 'Set your weight in kg:'
+                text: qsTrId("id-weightLabel") + ':' // Set your weight (in kg)
                 color: 'white'
             }
         }
@@ -48,7 +49,7 @@ Item {
 
         Button {
             id: saveButton
-            text: 'PROCEED' // SAVE
+            text: qsTrId("id-saveButton") // PROCEED
             height: mainWindow.height / 8
 
             anchors {

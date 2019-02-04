@@ -80,7 +80,7 @@ Item {
                     anchors.horizontalCenter: mainOngoingWorkoutSpeedLabel.horizontalCenter
                     anchors.top: mainOngoingWorkoutSpeedLabel.bottom
                     font.pointSize: mainWindow.height / 40
-                    text: 'min/km'
+                    text: qsTrId("id-mainOngoingWorkoutSpeedUnit") // min/km
                     color: "white"
                 }
             }
@@ -173,7 +173,7 @@ Item {
                 anchors.centerIn: parent
                 font.pointSize: mainWindow.height / 26.67
                 color: "black"
-                text: elapsedTimer.running ? "PAUSE" : "CONTINUE"
+                text: elapsedTimer.running ? qsTrId("id-stopButtonLabelPause") : qsTrId("id-stopButtonLabelContinue") // PAUSE - CONTINUE
             }
 
             background:

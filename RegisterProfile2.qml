@@ -33,7 +33,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pointSize: Math.min(mainWindow.height, mainWindow.width) / 20
                 color: 'white'
-                text: 'Set your birthdate:'
+                text: qsTrId("id-noteLabel") + ':' // Set your birthdate
             }
         }
 
@@ -82,7 +82,7 @@ Item {
 
         Button {
             id: saveButton
-            text: 'PROCEED' // SAVE
+            text: qsTrId("id-saveButton") // PROCEED
             height: mainWindow.height / 8
 
             anchors {

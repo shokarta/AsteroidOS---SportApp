@@ -33,7 +33,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 font.pointSize: Math.min(mainWindow.height, mainWindow.width) / 20
-                text: 'Choose your gender:'
+                text: qsTrId("id-label1") + ':' // Choose your gender
                 color: "white"
             }
         }

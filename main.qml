@@ -9,7 +9,7 @@ ApplicationWindow {
     visible: true
     width: 400
     height: 400
-    title: qsTr("Sports App")
+    title: qsTrId("sport-spp") // Sports App
 
     property var currentWorkout
     property var profile
@@ -60,7 +60,7 @@ ApplicationWindow {
             var day;
             return date.getDate() + '.' + date.getMonth()+1 + '.' + date.getFullYear();
         }
-        else { return 'None'; }
+        else { return qsTrId("id-none"); } // None
     }
 
     StackView {

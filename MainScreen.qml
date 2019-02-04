@@ -5,7 +5,9 @@ import QtPositioning 5.2
 import 'DatabaseJS.js' as DatabaseJS
 
 Item {
-property bool updateProfile: true
+
+    property bool updateProfile: true
+
     SwipeView {
         id: view
 
@@ -51,7 +53,7 @@ property bool updateProfile: true
                             id: rowId
                             Text {
                                 font.pointSize: 16
-                                text: '<b>ID:</b> ' + profile['id']
+                                text: '<b>' + qsTrId("id-rowId") + ':</b> ' + profile['id'] // ID
                                 color: 'white'
                             }
                         }
@@ -59,7 +61,7 @@ property bool updateProfile: true
                             id: rowGender
                             Text {
                                 font.pointSize: 16
-                                text: '<b>Gender:</b> ' + profile['gender']
+                                text: '<b>' + qsTrId("id-rowGender") + ':</b> ' + profile['gender'] // Gender
                                 color: 'white'
                             }
                         }
@@ -67,7 +69,7 @@ property bool updateProfile: true
                             id: rowAge
                             Text {
                                 font.pointSize: 16
-                                text: '<b>Age:</b> ' + getAge(profile['age']) + ' years'
+                                text: '<b>' + qsTrId("id-rowAge") + ':</b> ' + getAge(profile['age']) + ' ' + qsTrId("id-rowAgeUnits") // Age - Years
                                 color: 'white'
                             }
                         }
@@ -75,7 +77,7 @@ property bool updateProfile: true
                             id: rowWeight
                             Text {
                                 font.pointSize: 16
-                                text: '<b>Weight:</b> ' + profile['weight'] + ' kg'
+                                text: '<b>' + qsTrId("id-rowWeight") + ':</b> ' + profile['weight'] + ' kg' // Weight
                                 color: 'white'
                             }
                         }
@@ -119,7 +121,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Total Workouts:</b>'
+                                text: '<b>' + qsTrId("id-rowWorkoutsAmount") + ':</b>' // Total Workouts
                                 color: 'white'
                             }
                         }
@@ -143,7 +145,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Time Spent:</b>'
+                                text: '<b>' + qsTrId("id-rowWorkoutsTimespent") + ':</b>' // Time Spent
                                 color: 'white'
                             }
                         }
@@ -167,7 +169,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Total Distance:</b>'
+                                text: '<b>' + qsTrId("id-rowWorkoutsDistance") + ':</b>' // Total Distance
                                 color: 'white'
                             }
                         }
@@ -191,7 +193,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Calories Burned:</b>'
+                                text: '<b>' + qsTrId("id-rowWorkoutsCalories") + ':</b>' // Calories Burned
                                 color: 'white'
                             }
                         }
@@ -215,7 +217,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Fluid Loss:</b>'
+                                text: '<b>' + qsTrId("id-rowWorkoutsFluid") + ':</b>' // Fluid Loss
                                 color: 'white'
                             }
                         }
@@ -232,7 +234,7 @@ property bool updateProfile: true
 
                 Button {
                     id: startButton
-                    text: 'START THE WORKOUT'
+                    text: qsTrId("id-startButton") // NEW WORKOUT
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
@@ -256,7 +258,7 @@ property bool updateProfile: true
                     anchors.top: parent.top
                     anchors.topMargin: 50
                     font.pointSize: Math.min(mainWindow.height, mainWindow.width) / 20
-                    text: 'Last Workout:'
+                    text: qsTrId("id-lastWorkoutLabel") + ':' // Last Workout
                     color: "white"
                 }
 
@@ -278,7 +280,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>ID Workout:</b>'
+                                text: '<b>' + qsTrId("id-rowLastWorkoutAmount") + ':</b>' // ID Workout
                                 color: 'white'
                             }
                         }
@@ -302,7 +304,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Date:</b>'
+                                text: '<b>' + qsTrId("id-rowLastWorkoutDate") + ':</b>' // Date
                                 color: 'white'
                             }
                         }
@@ -326,7 +328,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Sport Type:</b>'
+                                text: '<b>' + qsTrId("id-rowLastWorkoutType") + ':</b>' // Sport Type
                                 color: 'white'
                             }
                         }
@@ -350,7 +352,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Time Spent:</b>'
+                                text: '<b>' + qsTrId("id-rowLastWorkoutTimespent") + ':</b>' // Time Spent
                                 color: 'white'
                             }
                         }
@@ -374,7 +376,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Total Distance:</b>'
+                                text: '<b>' + qsTrId("id-rowLastWorkoutDistance") + ':</b>' // Total Distance
                                 color: 'white'
                             }
                         }
@@ -398,7 +400,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Average Speed:</b>'
+                                text: '<b>' + qsTrId("id-rowLastWorkoutAvgSpeed") + ':</b>' // Average Speed
                                 color: 'white'
                             }
                         }
@@ -406,7 +408,7 @@ property bool updateProfile: true
                             width: parent.width / 2
                             Text {
                                 font.pointSize: 15
-                                text: lastIdCurrentWorkout['avgspeed'].toFixed(1) + ' km/h'
+                                text: lastIdCurrentWorkout['avgspeed'] ? lastIdCurrentWorkout['avgspeed'].toFixed(1) + ' km/h' : '0.0'
                                 color: 'white'
                             }
                         }
@@ -422,7 +424,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Calories Burned:</b>'
+                                text: '<b>' + qsTrId("id-rowLastWorkoutCalories") + ':</b>' // Calories Burned
                                 color: 'white'
                             }
                         }
@@ -446,7 +448,7 @@ property bool updateProfile: true
                             Text {
                                 anchors.right: parent.right
                                 font.pointSize: 15
-                                text: '<b>Fluid Loss:</b>'
+                                text: '<b>' + qsTrId("id-rowLastWorkoutFluid") + ':</b>' // Fluid Loss
                                 color: 'white'
                             }
                         }
@@ -474,7 +476,7 @@ property bool updateProfile: true
                         anchors.centerIn: parent
                         font.pointSize: mainWindow.height / 26.67
                         color: "black"
-                        text: "DELETE WORKOUT"
+                        text: qsTrId("id-deleteLastButton") // DELETE WORKOUT
                     }
 
                     background:
