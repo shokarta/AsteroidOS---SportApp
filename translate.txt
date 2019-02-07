@@ -1,1 +1,0 @@
-c:\Qt\Qt5.10.1\5.10.1\mingw53_32\bin\lupdate main.qml MainScreen.qml OngoingWorkoutScreen.qml RegisterProfile1.qml RegisterProfile2.qml RegisterProfile3.qml ScreenWelcome.qml -ts i18n/asteroid-sportapp.en_GB.ts
