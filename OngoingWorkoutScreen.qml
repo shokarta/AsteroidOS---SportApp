@@ -1,7 +1,8 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.3
 import QtQuick.LocalStorage 2.0
-import QtPositioning 5.2
+import QtLocation 5.6
+import QtPositioning 5.6
 import 'DatabaseJS.js' as DatabaseJS
 
 Item {

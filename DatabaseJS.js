@@ -4,7 +4,6 @@ sports[0] = { name: "None",  factor: 0 };
 sports[1] = { name: "Running",  factor: 1 };
 sports[2] = { name: "Walking",  factor: 2 };
 sports[3] = { name: "Swimming", factor: 3 };
-sports[4] = { name: "Swimming", factor: 3 };
 
 // RECOUNTING by GENDER
 var genderRecount = [];
@@ -400,4 +399,23 @@ function workout_delete(id_workout) {
     });
     workout_getInfo();
     stackView.push(mainScreen);
+}
+
+// Info for miniMap
+function workout_getMapFromWorkout() {
+    // open database connection
+    db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize);
+
+    db.transaction(function(tx) {
+        var rs = tx.executeSql('SELECT min(gps_latitude) AS min_lat, avg(gps_latitude) AS avg_lat, max(gps_latitude) AS max_lat, min(gps_longitude) AS min_long, avg(gps_longitude) AS avg_long, max(gps_longitude) AS max_long FROM `workouts` ORDER BY id_workout LIMIT 1');
+        for (var ix = 0; ix < rs.rows.length; ++ix) {
+            mapWorkout = {  min_lat: rs.rows.item(ix).min_lat,
+                            avg_lat: rs.rows.item(ix).avg_lat,
+                            max_lat: rs.rows.item(ix).max_lat,
+                            min_long: rs.rows.item(ix).min_long,
+                            avg_long: rs.rows.item(ix).avg_long,
+                            max_long: rs.rows.item(ix).max_long,
+                            zoomIndex: 0.15 * Math.max(Math.abs(rs.rows.item(ix).max_lat-rs.rows.item(ix).min_lat),Math.abs(rs.rows.item(ix).max_long-rs.rows.item(ix).min_long))  };
+        }
+    });
 }

@@ -12,8 +12,9 @@ ApplicationWindow {
     title: qsTrId("sport-spp") // Sports App
 
     property var currentWorkout
+    property var mapWorkout
     property var profile
-    property var lastIdCurrentWorkout
+    property var lastIdCurrentWorkout: DatabaseJS.workout_getInfo()
     property var summaryWorkouts
     property var workout_id
     property var lastWorkoutSummary
@@ -61,6 +62,17 @@ ApplicationWindow {
             return date.getDate() + '.' + date.getMonth()+1 + '.' + date.getFullYear();
         }
         else { return qsTrId("id-none"); } // None
+    }
+    function genderTranslate(gender) {
+             if (gender==='Male')   { return qsTrId("id-rowGender-male"); }
+        else if (gender==='Female') { return qsTrId("id-rowGender-female"); }
+        else                        { return qsTrId("id-rowGender-none"); }
+    }
+    function sportTranslate(sport) {
+             if (sport==='None')   { return qsTrId("id-sporttype-none"); }
+        else if (sport==='Running') { return qsTrId("id-sporttype-running"); }
+        else if (sport==='Walking') { return qsTrId("id-sporttype-walking"); }
+        else if (sport==='Swimming') { return qsTrId("id-sporttype-swimming"); }
     }
 
     StackView {

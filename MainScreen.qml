@@ -1,7 +1,8 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.3
 import QtQuick.LocalStorage 2.0
-import QtPositioning 5.2
+import QtLocation 5.6
+import QtPositioning 5.6
 import 'DatabaseJS.js' as DatabaseJS
 
 Item {
@@ -61,7 +62,7 @@ Item {
                             id: rowGender
                             Text {
                                 font.pointSize: 16
-                                text: '<b>' + qsTrId("id-rowGender") + ':</b> ' + profile['gender'] // Gender
+                                text: '<b>' + qsTrId("id-rowGender") + ':</b> ' + genderTranslate(profile['gender']) // Gender
                                 color: 'white'
                             }
                         }
@@ -287,6 +288,7 @@ Item {
                         Column {
                             width: parent.width / 2
                             Text {
+                                id: lastWorkoutID
                                 font.pointSize: 15
                                 text: lastIdCurrentWorkout['id']
                                 color: 'white'
@@ -336,7 +338,7 @@ Item {
                             width: parent.width / 2
                             Text {
                                 font.pointSize: 15
-                                text: DatabaseJS.sports[lastIdCurrentWorkout['sport']].name
+                                text: sportTranslate(DatabaseJS.sports[lastIdCurrentWorkout['sport']].name)
                                 color: 'white'
                             }
                         }
@@ -497,6 +499,74 @@ Item {
 
                     onActivated: {
                         DatabaseJS.workout_delete(lastIdCurrentWorkout['id']);
+                    }
+                }
+            }
+        }
+
+        Item {
+
+            id: mapViewSlide
+            Rectangle {
+                anchors.fill: parent
+
+                Plugin {
+                    id: mapPlugin
+                    name: "esri" // "osm", "mapboxgl", "esri", ...
+                }
+
+
+                Map {
+
+                    Component.onCompleted: {
+                        DatabaseJS.workout_getMapFromWorkout();
+                    }
+                    onMapReadyChanged: {
+                        //miniMap.visibleRegion.QGeoRectangle(QtPositioning.coordinate(mapWorkout['min_lat'], mapWorkout['min_long']), QtPositioning.coordinate(mapWorkout['max_lat'], mapWorkout['max_long'])));
+//                        console.log(mapWorkout['min_lat']+'-'+mapWorkout['min_long']+'-'+mapWorkout['max_lat']+'-'+mapWorkout['max_long']);
+//                        var height = mapWorkout['max_lat']-mapWorkout['min_lat'];
+//                        var width = mapWorkout['max_long']-mapWorkout['min_long'];
+//                        var mezi = (height - width) / 2;
+//                        var long_min = mapWorkout['min_long']-mezi;
+//                        var long_max = mapWorkout['max_long']+mezi;
+//                        miniMap.visibleRegion = QtPositioning.rectangle(QtPositioning.coordinate(mapWorkout['min_lat'], long_min), QtPositioning.coordinate(mapWorkout['max_lat'], long_max))
+                    }
+
+                    id: miniMap
+                    plugin: mapPlugin
+                    anchors.fill: parent
+                    center: QtPositioning.coordinate(mapWorkout['avg_lat'], mapWorkout['avg_long']) // Last Workout
+                    //zoomLevel: 14
+                    gesture.enabled: false
+                    copyrightsVisible: false
+                    visibleRegion: QtPositioning.rectangle(QtPositioning.coordinate(mapWorkout['max_lat'] + mapWorkout['zoomIndex'], mapWorkout['min_long'] - mapWorkout['zoomIndex']), QtPositioning.coordinate(mapWorkout['min_lat'] - mapWorkout['zoomIndex'], mapWorkout['max_long'] + mapWorkout['zoomIndex']))
+
+                    MouseArea {
+                        anchors.fill: parent
+                        //onClicked: {console.log("visibleRegion : " + miniMap.visibleRegion.boundingGeoRectangle())}
+                    }
+
+                    MapPolyline {
+                        id: groupPolyline
+                        line.color: 'darkblue'
+                        line.width: 5
+
+                        function populateMap() {
+                            groupPolyline.path = []; // clearing the path
+
+                            db = LocalStorage.openDatabaseSync(dbId, dbVersion, dbDescription, dbSize); //lastWorkoutID.text
+                            db.transaction(function(tx) {
+                                var test = [];
+                                var rs = tx.executeSql('SELECT gps_latitude, gps_longitude FROM `workouts` WHERE id_workout=' + lastIdCurrentWorkout['id']);
+                                for (var ix = 0; ix < rs.rows.length; ++ix) {
+                                    groupPolyline.addCoordinate(QtPositioning.coordinate(rs.rows.item(ix).gps_latitude, rs.rows.item(ix).gps_longitude));
+                                }
+                            });
+                            miniMap.visibleRegion.boundingGeoRectangle(QtPositioning.rectangle(QtPositioning.coordinate(mapWorkout['min_lat'], mapWorkout['min_long']), QtPositioning.coordinate(mapWorkout['max_lat'], mapWorkout['max_long'])));
+                        }
+                        Component.onCompleted: {
+                            populateMap();
+                        }
                     }
                 }
             }
