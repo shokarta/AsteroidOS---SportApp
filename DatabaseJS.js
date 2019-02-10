@@ -243,7 +243,7 @@ function workout_newstart() {
 
         var timestamp = Math.floor(Date.now() / 1000);
         var gps_latitude = gps_lat;
-        var gos_longitude = gps_long;
+        var gps_longitude = gps_long;
 //        var gps_latitude = Math.random() * (50.399 - 50.398) + 50.398; // SHOKARTA - GPS Latitude
 //        var gps_longitude = Math.random() * (13.185 - 13.184) + 13.184; // SHOKARTA - GPS Longitude
         var gps_altitude = Math.random() * (360 - 350) + 320; // SHOKARTA - GPS Altitude
@@ -325,7 +325,7 @@ function workout_refresh(id_workout, timerCheck) {
         var timestamp = Math.floor(Date.now() / 1000);
         var timespent = timerCheck;
         var gps_latitude = gps_lat;
-        var gos_longitude = gps_long;
+        var gps_longitude = gps_long;
 //        var gps_latitude = Math.random() * (50.399 - 50.398) + 50.398; // SHOKARTA - GPS Latitude
 //        var gps_longitude = Math.random() * (13.185 - 13.184) + 13.184; // SHOKARTA - GPS Longitude
         var gps_altitude = Math.random() * (360 - 350) + 320; // SHOKARTA - GPS Altitude

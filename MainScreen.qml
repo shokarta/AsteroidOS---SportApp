@@ -537,7 +537,7 @@ Item {
                     anchors.fill: parent
                     center: QtPositioning.coordinate(mapWorkout['avg_lat'], mapWorkout['avg_long']) // Last Workout
                     //zoomLevel: 14
-                    gesture.enabled: false
+                    gesture.enabled: true
                     copyrightsVisible: false
                     visibleRegion: QtPositioning.rectangle(QtPositioning.coordinate(mapWorkout['max_lat'] + mapWorkout['zoomIndex'], mapWorkout['min_long'] - mapWorkout['zoomIndex']), QtPositioning.coordinate(mapWorkout['min_lat'] - mapWorkout['zoomIndex'], mapWorkout['max_long'] + mapWorkout['zoomIndex']))
 

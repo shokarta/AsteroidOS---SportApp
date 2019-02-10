@@ -8,8 +8,8 @@ ApplicationWindow {
 //Application {
     id: mainWindow
     visible: true
-    width: 400
-    height: 400
+    width: 1080
+    height: 1920
 //    title: qsTrId("sport-spp") // Sports App
 
     property var currentWorkout
