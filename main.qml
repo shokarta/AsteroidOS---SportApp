@@ -4,12 +4,12 @@ import QtQuick.LocalStorage 2.0
 import QtPositioning 5.2
 import 'DatabaseJS.js' as DatabaseJS
 
-//ApplicationWindow {
-Application {
+ApplicationWindow {
+//Application {
     id: mainWindow
-//    visible: true
-//    width: 400
-//    height: 400
+    visible: true
+    width: 400
+    height: 400
 //    title: qsTrId("sport-spp") // Sports App
 
     property var currentWorkout
@@ -20,6 +20,8 @@ Application {
     property var workout_id
     property var lastWorkoutSummary
     property var gpsPosition
+    property var gps_lat
+    property var gps_long
 
     property var genderChosen: profile['gender']
     property bool updateProfile
@@ -77,16 +79,18 @@ Application {
         else if (sport==='Swimming') { return qsTrId("id-sporttype-swimming"); }
     }
 
-//    PositionSource {
-//        id: positionSource
-//        updateInterval: 1000
-//        active: true
-//        //preferredPositioningMethods: PositionSource.AllPositioningMethods
+    PositionSource {
+        id: positionSource
+        updateInterval: 1000
+        active: true
+        preferredPositioningMethods: PositionSource.SatellitePositioningMethods
 
-//        Component.onCompleted: {
-//            gpsPosition = positionSource.position.coordinate;
-//        }
-//    }
+         onPositionChanged: {
+            gpsPosition = positionSource.position.coordinate;
+            gps_lat = gpsPosition.latitude;
+            gps_long = gpsPosition.longitude;
+        }
+    }
 
     StackView {
         id: stackView

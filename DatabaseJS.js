@@ -242,8 +242,10 @@ function workout_newstart() {
         workout_id = workout_id_sql.insertId
 
         var timestamp = Math.floor(Date.now() / 1000);
-        var gps_latitude = Math.random() * (50.399 - 50.398) + 50.398; // SHOKARTA - GPS Latitude
-        var gps_longitude = Math.random() * (13.185 - 13.184) + 13.184; // SHOKARTA - GPS Longitude
+        var gps_latitude = gps_lat;
+        var gos_longitude = gps_long;
+//        var gps_latitude = Math.random() * (50.399 - 50.398) + 50.398; // SHOKARTA - GPS Latitude
+//        var gps_longitude = Math.random() * (13.185 - 13.184) + 13.184; // SHOKARTA - GPS Longitude
         var gps_altitude = Math.random() * (360 - 350) + 320; // SHOKARTA - GPS Altitude
         var bpm = Math.floor(Math.random() * (189 - 150) + 150); // SHOKARTA - BPM
         var sql2 = 'INSERT INTO `workouts` (id_workout, timestamp, timespent, gps_latitude, gps_longitude, gps_altitude, bpm, distance, altitude_difference, speed, calories, hydratation) VALUES (' + workout_id + ', ' + timestamp + ', 0, ' + gps_latitude + ', ' + gps_longitude + ', ' + gps_altitude + ', ' + bpm + ', 0, 0, 0, 0, 0)';
@@ -322,8 +324,10 @@ function workout_refresh(id_workout, timerCheck) {
     db.transaction(function(tx) {
         var timestamp = Math.floor(Date.now() / 1000);
         var timespent = timerCheck;
-        var gps_latitude = Math.random() * (50.399 - 50.398) + 50.398; // SHOKARTA - GPS Latitude
-        var gps_longitude = Math.random() * (13.185 - 13.184) + 13.184; // SHOKARTA - GPS Longitude
+        var gps_latitude = gps_lat;
+        var gos_longitude = gps_long;
+//        var gps_latitude = Math.random() * (50.399 - 50.398) + 50.398; // SHOKARTA - GPS Latitude
+//        var gps_longitude = Math.random() * (13.185 - 13.184) + 13.184; // SHOKARTA - GPS Longitude
         var gps_altitude = Math.random() * (360 - 350) + 320; // SHOKARTA - GPS Altitude
         var bpm = Math.floor(Math.random() * (189 - 150) + 150); // SHOKARTA
 
